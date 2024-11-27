@@ -1,6 +1,5 @@
-
-#include <string>
 #include <iostream>
+#include <string>
 
 int main() {
     while(true) {

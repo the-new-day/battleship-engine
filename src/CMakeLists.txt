@@ -1,0 +1,1 @@
+add_executable(Battleship main.cpp Battleship.cpp Command.cpp)
