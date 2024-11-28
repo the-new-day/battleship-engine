@@ -1,1 +1,5 @@
-add_executable(Battleship main.cpp Battleship.cpp Command.cpp)
+add_executable(Battleship 
+    main.cpp 
+    Battleship.cpp 
+    Command.cpp
+    Field/MatrixField.cpp)

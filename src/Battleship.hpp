@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Command.hpp"
+#include "Field/Field.hpp"
+#include "Field/MatrixField.hpp"
 
 #include <map>
 #include <string>
@@ -14,10 +16,10 @@ enum class PlayerMode {
 };
 
 enum class ShipType {
-    kOne,
-    kTwo,
-    kThree,
-    kFour
+    kOne = 1,
+    kTwo = 2,
+    kThree = 3,
+    kFour = 4
 };
 
 enum class Strategy {
@@ -73,6 +75,10 @@ private:
     //std::map<std::string, Command*> commands_;
     bool is_game_running_ = false;
     bool is_game_finished_ = false;
+    bool did_lose_ = false;
+    bool did_win_ = false;
+
+    Field* field_ = nullptr;
 
     PlayerMode player_mode_;
 
@@ -88,4 +94,3 @@ private:
 };
 
 } // namespace Battleship
-
