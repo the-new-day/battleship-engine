@@ -5,7 +5,14 @@ namespace Battleship {
 // Max size of a field that can be stored in a simple binary matrix (30 MB)
 const uint64_t kMaxMatrixFieldArea = 251'658'240;
 
-Battleship::Battleship(GameMode mode) : game_mode_(mode) {
+// Battleship::Battleship(GameMode mode) : game_mode_(mode) {
+//     ship_types_[ShipType::kOne] = 0;
+//     ship_types_[ShipType::kTwo] = 0;
+//     ship_types_[ShipType::kThree] = 0;
+//     ship_types_[ShipType::kFour] = 0;
+// }
+
+Battleship::Battleship() {
     ship_types_[ShipType::kOne] = 0;
     ship_types_[ShipType::kTwo] = 0;
     ship_types_[ShipType::kThree] = 0;
@@ -17,7 +24,7 @@ Battleship::~Battleship() {
 }
 
 bool Battleship::IsPossibleToStart() const {
-    return status_ == BattleshipStatus::kPossibleToStart;
+    return game_mode_.has_value() && status_ == BattleshipStatus::kPossibleToStart;
 }
 
 bool Battleship::HasError() const {
@@ -30,7 +37,10 @@ BattleshipStatus Battleship::GetStatus() const {
 }
 
 void Battleship::HandleErrors() {
-    if (!field_width_.has_value() || !field_height_.has_value() || !strategy_type_.has_value()) {
+    if (!game_mode_.has_value() 
+    || !field_width_.has_value() 
+    || !field_height_.has_value() 
+    || !strategy_type_.has_value()) {
         status_ = BattleshipStatus::kConfigurationNotSet;
         return;
     }
@@ -170,6 +180,10 @@ bool Battleship::SetFieldWidth(uint64_t width) {
     field_width_ = width;
     HandleErrors();
     return true;
+}
+
+void Battleship::SetGameMode(GameMode mode) {
+    game_mode_ = mode;
 }
 
 bool Battleship::Start() {

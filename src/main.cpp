@@ -1,17 +1,13 @@
 #include <iostream>
 #include <string>
 
+#include "api/Api.hpp"
+#include "api/ConsoleApi.hpp"
+
 int main() {
-    while(true) {
-        std::string cmd;
-        std::getline(std::cin, cmd);
+    Battleship::Battleship game;
+    Battleship::ConsoleApi api(game);
 
-        if(cmd == "exit") {
-            return 0;
-        } else if(cmd == "ping") {
-            std::cout << "pong" << std::endl;
-        }
-    }
-
-    return 0;
+    api.Start();
+    return EXIT_SUCCESS;
 }

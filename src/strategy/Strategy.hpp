@@ -31,17 +31,15 @@ public:
              Field* enemy_field,
              const std::map<ShipType, uint64_t>& ship_types);
 
-    ShotResult RecieveShot(uint64_t x, uint64_t y);
-    bool HasAliveShips() const;
-
     virtual FieldPoint GetNextShot() const = 0;
     virtual FieldPoint MakeNextShot() = 0;
 
-    const std::map<ShipType, uint64_t>& GetShipAmount() const;
+    ShotResult RecieveShot(uint64_t x, uint64_t y);
+    bool HasAliveShips() const;
+
+    const std::map<ShipType, uint64_t>& GetShipTypes() const;
     uint64_t GetFieldWidth() const;
     uint64_t GetFieldHeight() const;
-    Field* GetField();
-    Field* GetEnemyField();
 
     void SetLastShotCoords(uint64_t x, uint64_t y);
     void SetLastShotCoords(FieldPoint point);

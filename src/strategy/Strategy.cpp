@@ -42,7 +42,7 @@ bool Strategy::HasAliveShips() const {
     return false;
 }
 
-const std::map<ShipType, uint64_t>& Strategy::GetShipAmount() const {
+const std::map<ShipType, uint64_t>& Strategy::GetShipTypes() const {
     return ship_types_;
 }
 
@@ -52,14 +52,6 @@ uint64_t Strategy::GetFieldWidth() const {
 
 uint64_t Strategy::GetFieldHeight() const {
     return field_height_;
-}
-
-Field* Strategy::GetField() {
-    return field_;
-}
-
-Field* Strategy::GetEnemyField() {
-    return enemy_field_;
 }
 
 void Strategy::DecreaseShipsAmount() {

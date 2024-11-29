@@ -33,10 +33,13 @@ enum class BattleshipStatus {
 
 class Battleship {
 public:
-    Battleship(GameMode mode);
+    // Battleship(GameMode mode);
+    Battleship();
     ~Battleship();
     Battleship(const Battleship&) = delete;
     Battleship& operator=(const Battleship&) = delete;
+
+    void SetGameMode(GameMode mode);
 
     bool Start();
     bool Stop();
@@ -76,7 +79,7 @@ private:
     Field* field_ = nullptr;
     Field* enemy_field_ = nullptr;
 
-    GameMode game_mode_;
+    std::optional<GameMode> game_mode_;
 
     std::map<ShipType, uint64_t> ship_types_;
 
