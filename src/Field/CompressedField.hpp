@@ -6,9 +6,9 @@
 
 namespace Battleship {
 
-class MartixField : public Field {
+class CompressedField : public Field {
 public:
-    MartixField(uint64_t width, uint64_t height);
+    CompressedField(uint64_t width, uint64_t height);
 
     bool SetShip(uint64_t x, uint64_t y) override;
     bool HasShip(uint64_t x, uint64_t y) const override;
@@ -17,7 +17,6 @@ public:
     void RemoveShip(uint64_t x, uint64_t y) override;
 
 private:
-    std::vector<std::vector<bool>> matrix_;
     uint64_t width_;
     uint64_t height_;
 };

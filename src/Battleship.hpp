@@ -1,8 +1,12 @@
 #pragma once
 
 #include "Command.hpp"
-#include "Field/Field.hpp"
-#include "Field/MatrixField.hpp"
+#include "field/Field.hpp"
+#include "field/MatrixField.hpp"
+
+#include "strategy/Strategy.hpp"
+#include "strategy/OrderedStrategy.hpp"
+#include "strategy/CustomStrategy.hpp"
 
 #include <map>
 #include <string>
@@ -10,27 +14,14 @@
 
 namespace Battleship {
 
-enum class PlayerMode {
+enum class GameMode {
     kMaster,
     kSlave
 };
 
-enum class ShipType {
-    kOne = 1,
-    kTwo = 2,
-    kThree = 3,
-    kFour = 4
-};
-
-enum class Strategy {
-    kOrdered,
-    kCustom
-};
-
-enum class ShotResult {
-    kMiss,
-    kHit,
-    kKill
+enum class StrategyType {
+    kCustom,
+    kOrdered
 };
 
 struct BattleshipError {
@@ -39,8 +30,10 @@ struct BattleshipError {
 
 class Battleship {
 public:
-    Battleship(PlayerMode mode);
+    Battleship(GameMode mode);
     ~Battleship();
+    Battleship(const Battleship&) = delete;
+    Battleship& operator=(const Battleship&) = delete;
 
     bool Start();
     bool Stop();
@@ -54,7 +47,7 @@ public:
     void SetShipsCount(ShipType type, uint64_t amount);
     uint64_t GetShipsCount(ShipType type);
 
-    void SetStrategy(Strategy strategy);
+    void SetStrategy(StrategyType strategy);
 
     std::pair<uint64_t, uint64_t> GetNextShot() const;
     ShotResult GetShot(uint64_t x, uint64_t y);
@@ -66,26 +59,27 @@ public:
     bool Dump(const std::string& path) const;
     bool LoadFrom(const std::string& path);
 
-    bool CanStartGame() const;
+    bool IsPossibleToStart() const;
 
     bool HasError() const;
     BattleshipError GetError() const;
 
 private:
-    //std::map<std::string, Command*> commands_;
+    //std::map<std::string, Command*> commands_; // TODO: separate Battleship class and the commands
     bool is_game_running_ = false;
     bool is_game_finished_ = false;
     bool did_lose_ = false;
     bool did_win_ = false;
 
     Field* field_ = nullptr;
+    bool is_field_good_ = false;
 
-    PlayerMode player_mode_;
+    GameMode game_mode_;
 
     std::map<ShipType, uint64_t> ships_count_;
     bool has_ships_ = false;
 
-    Strategy strategy = Strategy::kCustom;
+    StrategyType strategy_ = StrategyType::kCustom;
 
     uint64_t field_width_ = 0;
     uint64_t field_height_ = 0;
