@@ -2,37 +2,16 @@
 
 namespace Battleship {
 
-// Max size of a field that can be stored in a simple binary matrix (30 MB)
-const uint64_t kMaxMatrixFieldArea = 251'658'240;
-
-Strategy::Strategy(uint64_t field_width, 
-                   uint64_t field_height, 
-                   const std::map<ShipType, uint64_t>& ship_types,
-                   Field* field,
-                   Field* enemy_field)
-    : field_width_(field_width)
-    , field_height_(field_height)
-    , ship_types_(ship_types)
-    , field_(field)
-    , enemy_field_(enemy_field) {
-    // if (static_cast<double>(field_width) / kMaxMatrixFieldArea * field_height < 1) {
-    //     field_ = new MartixField(field_width, field_height);
-    //     return;
-    // }
-
-    // // TODO: choose optimal field
-    // field_ = new CompressedField(field_width, field_height);
-
-    // double density = (ship_types.at(ShipType::kOne) / field_width)
-    //                + (ship_types.at(ShipType::kTwo) / field_width)
-    //                + (ship_types.at(ShipType::kThree) / field_width)
-    //                + (ship_types.at(ShipType::kFour) / field_width);
-
-    // density /= field_height;
-
-    // if (density < 0.05) {
-        
-    // }
+Strategy::Strategy(Field* field, 
+                   Field* enemy_field,
+                   const std::map<ShipType, uint64_t>& ship_types)
+                   : field_(field)
+                   , enemy_field_(enemy_field)
+                   , ship_types_(ship_types) {
+    ships_count_[0] = ship_types.at(ShipType::kOne);
+    ships_count_[1] = ship_types.at(ShipType::kTwo);
+    ships_count_[2] = ship_types.at(ShipType::kThree);
+    ships_count_[3] = ship_types.at(ShipType::kFour);
 }
 
 ShotResult Strategy::RecieveShot(uint64_t x, uint64_t y) {
@@ -63,6 +42,26 @@ bool Strategy::HasAliveShips() const {
     return false;
 }
 
+const std::map<ShipType, uint64_t>& Strategy::GetShipAmount() const {
+    return ship_types_;
+}
+
+uint64_t Strategy::GetFieldWidth() const {
+    return field_width_;
+}
+
+uint64_t Strategy::GetFieldHeight() const {
+    return field_height_;
+}
+
+Field* Strategy::GetField() {
+    return field_;
+}
+
+Field* Strategy::GetEnemyField() {
+    return enemy_field_;
+}
+
 void Strategy::DecreaseShipsAmount() {
     for (size_t i = 0; i < kShipTypesAmount; ++i) {
         if (ships_count_[0] > 0) {
@@ -72,8 +71,25 @@ void Strategy::DecreaseShipsAmount() {
     }
 }
 
+void Strategy::SetLastShotCoords(uint64_t x, uint64_t y) {
+    last_shot_point_.x = x;
+    last_shot_point_.y = y;
+}
+
+void Strategy::SetLastShotCoords(FieldPoint point) {
+    last_shot_point_ = point;
+}
+
 void Strategy::SetLastShotResult(ShotResult result) {
     last_shot_result_ = result;
+}
+
+ShotResult Strategy::GetLastShotResult() const {
+    return last_shot_result_;
+}
+
+FieldPoint Strategy::GetLastShotPoint() const {
+    return last_shot_point_;
 }
 
 } // namespace Battleship

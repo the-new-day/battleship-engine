@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Command.hpp"
 #include "field/Field.hpp"
 #include "field/MatrixField.hpp"
 
@@ -11,6 +10,7 @@
 #include <map>
 #include <string>
 #include <utility>
+#include <optional>
 
 namespace Battleship {
 
@@ -24,8 +24,11 @@ enum class StrategyType {
     kOrdered
 };
 
-struct BattleshipError {
-    // TODO:
+enum class BattleshipStatus {
+    kConfigurationNotSet,
+    kWrongParameter,
+    kPossibleToStart,
+    kGameRunning
 };
 
 class Battleship {
@@ -41,16 +44,18 @@ public:
     bool SetFieldWidth(uint64_t width);
     bool SetFieldHeight(uint64_t height);
 
-    uint64_t GetWidth() const;
-    uint64_t GetHeight() const;
+    std::optional<uint64_t> GetWidth() const;
+    std::optional<uint64_t> GetHeight() const;
 
-    void SetShipsCount(ShipType type, uint64_t amount);
-    uint64_t GetShipsCount(ShipType type);
+    bool SetShipsCount(ShipType type, uint64_t amount);
+    uint64_t GetShipsCount(ShipType type) const;
 
-    void SetStrategy(StrategyType strategy);
+    void SetStrategy(StrategyType strategy_type);
 
-    std::pair<uint64_t, uint64_t> GetNextShot() const;
-    ShotResult GetShot(uint64_t x, uint64_t y);
+    std::optional<FieldPoint> MakeNextShot();
+    std::optional<ShotResult> RecieveShot(uint64_t x, uint64_t y);
+
+    void SetLastShotResult(ShotResult result);
 
     bool IsFinished() const;
     bool IsWin() const;
@@ -62,29 +67,47 @@ public:
     bool IsPossibleToStart() const;
 
     bool HasError() const;
-    BattleshipError GetError() const;
+    BattleshipStatus GetStatus() const;
 
 private:
-    //std::map<std::string, Command*> commands_; // TODO: separate Battleship class and the commands
     bool is_game_running_ = false;
     bool is_game_finished_ = false;
-    bool did_lose_ = false;
-    bool did_win_ = false;
 
     Field* field_ = nullptr;
-    bool is_field_good_ = false;
+    Field* enemy_field_ = nullptr;
 
     GameMode game_mode_;
 
-    std::map<ShipType, uint64_t> ships_count_;
-    bool has_ships_ = false;
+    std::map<ShipType, uint64_t> ship_types_;
 
-    StrategyType strategy_ = StrategyType::kCustom;
+    std::optional<StrategyType> strategy_type_ = StrategyType::kCustom;
 
-    uint64_t field_width_ = 0;
-    uint64_t field_height_ = 0;
+    Strategy* strategy_ = nullptr;
+    OrderedStrategy* ordered_strategy_ = nullptr;
+    CustomStrategy* custom_strategy_ = nullptr;
 
-    BattleshipError error_;
+    std::optional<uint64_t> field_width_;
+    std::optional<uint64_t> field_height_;
+
+    BattleshipStatus status_ = BattleshipStatus::kConfigurationNotSet;
+
+    ShotResult last_shot_result_;
+    FieldPoint last_shot_point_;
+
+    // made only so that up to 4 * (2^64 - 1) ships can be stored
+    // does not represent the number of ships of a particular type
+    std::array<uint64_t, kShipTypesAmount> enemy_ships_count_;
+
+    void HandleErrors();
+
+    void CreateField();
+    void InitStrategy();
+    void ChangeStrategy();
+    
+    void DecreaseEnemyShipsAmount();
+    bool EnemyHasShips() const;
+
+    void RefreshGame();
 };
 
 } // namespace Battleship

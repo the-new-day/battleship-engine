@@ -3,19 +3,26 @@
 namespace Battleship {
 
 FieldPoint OrderedStrategy::MakeNextShot() {
+    FieldPoint point = GetNextShot();
+    last_shot_point_ = point;
+    return last_shot_point_;
+}
+
+FieldPoint OrderedStrategy::GetNextShot() const {
+    FieldPoint point;
     if (last_shot_point_.x == field_width_ - 1) {
-        last_shot_point_.x = 0;
+        point.x = 0;
     } else {
-        ++last_shot_point_.x;
+        point.x = last_shot_point_.x + 1;
     }
 
     if (last_shot_point_.y == field_height_ - 1) {
-        last_shot_point_.y = 0;
+        point.y = 0;
     } else {
-        ++last_shot_point_.y;
+        point.y = last_shot_point_.y + 1;
     }
 
-    return last_shot_point_;
+    return point;
 }
 
 } // namespace Battleship

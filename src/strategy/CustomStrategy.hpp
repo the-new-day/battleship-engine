@@ -9,8 +9,14 @@ namespace Battleship {
 
 class CustomStrategy : public Strategy {
 public:
-    FieldPoint MakeNextShot() override;
+    CustomStrategy(Field* field,
+                   Field* enemy_field,
+                   const std::map<ShipType, uint64_t>& ship_types) 
+                   : Strategy(field, enemy_field, ship_types) {};
 
+    FieldPoint GetNextShot() const override;
+    FieldPoint MakeNextShot() override;
+    
 private:
 
 };

@@ -2,8 +2,11 @@
 
 namespace Battleship {
 
+FieldPoint CustomStrategy::GetNextShot() const {
+    return last_shot_point_;
+}
+
 FieldPoint CustomStrategy::MakeNextShot() {
-    // TODO:
     return last_shot_point_;
 }
 

@@ -26,16 +26,18 @@ bool MartixField::HasShip(uint64_t x, uint64_t y) const {
     return matrix_[y][x];
 }
 
-bool MartixField::IsInBounds(uint64_t x, uint64_t y) const {
-    return x < width_ && y < height_;
-}
-
 void MartixField::RemoveShip(uint64_t x, uint64_t y) {
     if (!IsInBounds(x, y)) {
         return;
     }
 
     matrix_[y][x] = false;
+}
+
+void MartixField::Clear() {
+    for (auto& row : matrix_) {
+        row.clear();
+    }
 }
 
 } // namespace Battleship

@@ -13,13 +13,12 @@ public:
     bool SetShip(uint64_t x, uint64_t y) override;
     bool HasShip(uint64_t x, uint64_t y) const override;
 
-    bool IsInBounds(uint64_t x, uint64_t y) const override;
     void RemoveShip(uint64_t x, uint64_t y) override;
+
+    void Clear() override;
 
 private:
     std::vector<std::vector<bool>> matrix_;
-    uint64_t width_;
-    uint64_t height_;
 };
     
 } // namespace Battleship

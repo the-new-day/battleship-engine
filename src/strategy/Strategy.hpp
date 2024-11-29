@@ -4,7 +4,6 @@
 #include "field/MatrixField.hpp"
 #include "field/CompressedField.hpp"
 
-#include <utility>
 #include <cstdint>
 #include <map>
 #include <array>
@@ -28,17 +27,28 @@ const size_t kShipTypesAmount = 4;
 
 class Strategy {
 public:
-    Strategy(uint64_t field_width,
-             uint64_t field_height,
-             const std::map<ShipType, uint64_t>& ship_types,
-             Field* field,
-             Field* enemy_field);
+    Strategy(Field* field,
+             Field* enemy_field,
+             const std::map<ShipType, uint64_t>& ship_types);
 
-    virtual ShotResult RecieveShot(uint64_t x, uint64_t y);
-    virtual void SetLastShotResult(ShotResult result);
-    virtual bool HasAliveShips() const;
+    ShotResult RecieveShot(uint64_t x, uint64_t y);
+    bool HasAliveShips() const;
 
+    virtual FieldPoint GetNextShot() const = 0;
     virtual FieldPoint MakeNextShot() = 0;
+
+    const std::map<ShipType, uint64_t>& GetShipAmount() const;
+    uint64_t GetFieldWidth() const;
+    uint64_t GetFieldHeight() const;
+    Field* GetField();
+    Field* GetEnemyField();
+
+    void SetLastShotCoords(uint64_t x, uint64_t y);
+    void SetLastShotCoords(FieldPoint point);
+    void SetLastShotResult(ShotResult result);
+
+    ShotResult GetLastShotResult() const;
+    FieldPoint GetLastShotPoint() const;
 
 protected:
     uint64_t field_width_;
@@ -51,8 +61,6 @@ protected:
     ShotResult last_shot_result_;
     FieldPoint last_shot_point_;
 
-    // made only so that up to 4 * (2^64 - 1) ships can be stored
-    // does not represent the number of ships of a particular type
     std::array<uint64_t, kShipTypesAmount> ships_count_;
     void DecreaseShipsAmount();
 };
