@@ -30,6 +30,16 @@ enum class BattleshipStatus {
     kGameRunning
 };
 
+const uint64_t kMasterModeFieldWidth = 10;
+const uint64_t kMasterModeFieldHeight = 10;
+
+const std::map<ShipType, uint64_t> kMasterModeShipsCount = {
+    {ShipType::kOne, 4},
+    {ShipType::kTwo, 3},
+    {ShipType::kThree, 2},
+    {ShipType::kFour, 1}
+};
+
 class Battleship {
 public:
     Battleship();
@@ -109,6 +119,8 @@ private:
     bool EnemyHasShips() const;
 
     void RefreshGame();
+
+    void SetMasterConfig();
 };
 
 } // namespace Battleship

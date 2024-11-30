@@ -7,7 +7,7 @@
 
 namespace Battleship {
 
-// Max size of a field that can be stored in a simple binary matrix (30 MB)
+// Max area of a field that can be stored in a simple binary matrix (30 MB)
 const uint64_t kMaxMatrixFieldArea = 251'658'240;
 
 Battleship::Battleship() {
@@ -200,11 +200,19 @@ bool Battleship::SetFieldWidth(uint64_t width) {
 void Battleship::SetGameMode(GameMode mode) {
     game_mode_ = mode;
     HandleErrors();
+    
+    if (mode == GameMode::kMaster) {
+        SetMasterConfig();
+    }
 }
 
 bool Battleship::Start() {
     if (!IsPossibleToStart() || is_game_running_) {
         return false;
+    }
+
+    if (game_mode_ == GameMode::kMaster) {
+        SetMasterConfig();
     }
     
     RefreshGame();
@@ -262,6 +270,12 @@ void Battleship::RefreshGame() {
     delete enemy_field_;
     delete ordered_strategy_;
     delete custom_strategy_;
+}
+
+void Battleship::SetMasterConfig() {
+    field_width_ = kMasterModeFieldWidth;
+    field_height_ = kMasterModeFieldHeight;
+    ship_types_ = kMasterModeShipsCount;
 }
 
 } // namespace Battleship
