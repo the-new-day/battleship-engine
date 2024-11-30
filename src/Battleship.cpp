@@ -1,4 +1,7 @@
 #include "Battleship.hpp"
+#include "field/MatrixField.hpp"
+#include "field/RleField.hpp"
+#include "field/RleBlocksField.hpp"
 
 #include <iostream>
 
@@ -62,8 +65,21 @@ void Battleship::CreateField() {
         return;
     }
 
-    field_ = new CompressedField(field_width_.value(), field_height_.value());
-    enemy_field_ = new CompressedField(field_width_.value(), field_height_.value());
+    double density = (static_cast<double>(ship_types_.at(ShipType::kOne)) / field_width_.value())
+                   + (static_cast<double>(ship_types_.at(ShipType::kTwo)) / field_width_.value())
+                   + (static_cast<double>(ship_types_.at(ShipType::kThree)) / field_width_.value())
+                   + (static_cast<double>(ship_types_.at(ShipType::kFour)) / field_width_.value());
+
+    density /= field_height_.value();
+
+    if (density < 0.5) {
+        field_ = new RleBlocksField(field_width_.value(), field_height_.value());
+        enemy_field_ = new RleBlocksField(field_width_.value(), field_height_.value());
+        return;
+    }
+
+    field_ = new RleField(field_width_.value(), field_height_.value());
+    enemy_field_ = new RleField(field_width_.value(), field_height_.value());
 }
 
 void Battleship::InitStrategy() {

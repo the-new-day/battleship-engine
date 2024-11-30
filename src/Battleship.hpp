@@ -1,7 +1,6 @@
 #pragma once
 
 #include "field/Field.hpp"
-#include "field/MatrixField.hpp"
 
 #include "strategy/Strategy.hpp"
 #include "strategy/OrderedStrategy.hpp"

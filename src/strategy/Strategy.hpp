@@ -1,8 +1,6 @@
 #pragma once
 
 #include "field/Field.hpp"
-#include "field/MatrixField.hpp"
-#include "field/CompressedField.hpp"
 
 #include <cstdint>
 #include <map>

@@ -6,9 +6,9 @@
 
 namespace Battleship {
 
-class CompressedField : public Field {
+class RleBlocksField : public Field {
 public:
-    CompressedField(uint64_t width, uint64_t height);
+    RleBlocksField(uint64_t width, uint64_t height);
 
     bool SetShip(uint64_t x, uint64_t y) override;
     bool HasShip(uint64_t x, uint64_t y) const override;
