@@ -1,11 +1,13 @@
 #include "MatrixField.hpp"
 
+#include <iostream>
+
 namespace Battleship {
 
 MartixField::MartixField(uint64_t width, uint64_t height) : Field(width, height) {
-    matrix_.reserve(height);
+    matrix_.resize(height);
     for (auto& row : matrix_) {
-        row.reserve(width);
+        row.resize(width);
     }
 }
 

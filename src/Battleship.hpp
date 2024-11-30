@@ -27,13 +27,12 @@ enum class StrategyType {
 enum class BattleshipStatus {
     kConfigurationNotSet,
     kWrongParameter,
-    kPossibleToStart,
+    kConfigurationDone,
     kGameRunning
 };
 
 class Battleship {
 public:
-    // Battleship(GameMode mode);
     Battleship();
     ~Battleship();
     Battleship(const Battleship&) = delete;
@@ -83,7 +82,7 @@ private:
 
     std::map<ShipType, uint64_t> ship_types_;
 
-    std::optional<StrategyType> strategy_type_ = StrategyType::kCustom;
+    StrategyType strategy_type_ = StrategyType::kCustom;
 
     Strategy* strategy_ = nullptr;
     OrderedStrategy* ordered_strategy_ = nullptr;

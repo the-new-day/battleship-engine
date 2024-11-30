@@ -13,9 +13,6 @@ public:
 
 protected:
     Battleship& game_;
-    bool is_game_created_ = false;
-    bool is_game_running_ = false;
 };
     
 } // namespace Battleship
-

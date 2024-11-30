@@ -53,6 +53,8 @@ protected:
     uint64_t field_height_;
     std::map<ShipType, uint64_t> ship_types_;
 
+    bool is_game_started_ = false;
+
     Field* field_;
     Field* enemy_field_;
 
@@ -61,6 +63,8 @@ protected:
 
     std::array<uint64_t, kShipTypesAmount> ships_count_;
     void DecreaseShipsAmount();
+
+    virtual void StartGame() = 0;
 };
 
 } // namespace Battleship

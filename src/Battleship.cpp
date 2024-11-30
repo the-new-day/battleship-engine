@@ -1,16 +1,11 @@
 #include "Battleship.hpp"
 
+#include <iostream>
+
 namespace Battleship {
 
 // Max size of a field that can be stored in a simple binary matrix (30 MB)
 const uint64_t kMaxMatrixFieldArea = 251'658'240;
-
-// Battleship::Battleship(GameMode mode) : game_mode_(mode) {
-//     ship_types_[ShipType::kOne] = 0;
-//     ship_types_[ShipType::kTwo] = 0;
-//     ship_types_[ShipType::kThree] = 0;
-//     ship_types_[ShipType::kFour] = 0;
-// }
 
 Battleship::Battleship() {
     ship_types_[ShipType::kOne] = 0;
@@ -24,11 +19,12 @@ Battleship::~Battleship() {
 }
 
 bool Battleship::IsPossibleToStart() const {
-    return game_mode_.has_value() && status_ == BattleshipStatus::kPossibleToStart;
+    // TODO: check if possible to place ships
+    return game_mode_.has_value() && status_ == BattleshipStatus::kConfigurationDone;
 }
 
 bool Battleship::HasError() const {
-    return status_ != BattleshipStatus::kPossibleToStart
+    return status_ != BattleshipStatus::kConfigurationDone
         && status_ != BattleshipStatus::kGameRunning;
 }
 
@@ -40,12 +36,15 @@ void Battleship::HandleErrors() {
     if (!game_mode_.has_value() 
     || !field_width_.has_value() 
     || !field_height_.has_value() 
-    || !strategy_type_.has_value()) {
+    || (ship_types_.at(ShipType::kOne) == 0
+    && ship_types_.at(ShipType::kTwo) == 0
+    && ship_types_.at(ShipType::kThree) == 0
+    && ship_types_.at(ShipType::kFour) == 0)) {
         status_ = BattleshipStatus::kConfigurationNotSet;
         return;
     }
 
-    status_ = is_game_running_ ? BattleshipStatus::kGameRunning : BattleshipStatus::kPossibleToStart;
+    status_ = is_game_running_ ? BattleshipStatus::kGameRunning : BattleshipStatus::kConfigurationDone;
 }
 
 bool Battleship::IsLose() const {
@@ -123,7 +122,7 @@ std::optional<FieldPoint> Battleship::MakeNextShot() {
         return std::nullopt;
     }
 
-    last_shot_point_ = strategy_->GetNextShot();
+    last_shot_point_ = strategy_->MakeNextShot();
     return last_shot_point_;
 }
 
@@ -184,6 +183,7 @@ bool Battleship::SetFieldWidth(uint64_t width) {
 
 void Battleship::SetGameMode(GameMode mode) {
     game_mode_ = mode;
+    HandleErrors();
 }
 
 bool Battleship::Start() {
@@ -211,7 +211,7 @@ bool Battleship::Stop() {
     }
 
     is_game_running_ = false;
-    status_ = BattleshipStatus::kPossibleToStart;
+    status_ = BattleshipStatus::kConfigurationDone;
     return true;
 }
 

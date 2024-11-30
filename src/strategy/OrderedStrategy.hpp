@@ -16,6 +16,9 @@ public:
              
     FieldPoint GetNextShot() const override;
     FieldPoint MakeNextShot() override;
+
+private:
+    void StartGame() override;
 };
 
 } // namespace Battleship

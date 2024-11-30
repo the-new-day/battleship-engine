@@ -18,7 +18,7 @@ public:
     FieldPoint MakeNextShot() override;
     
 private:
-
+    void StartGame() override;
 };
 
 } // namespace Battleship

@@ -1,5 +1,7 @@
 #include "Strategy.hpp"
 
+#include <iostream>
+
 namespace Battleship {
 
 Strategy::Strategy(Field* field, 
@@ -7,7 +9,9 @@ Strategy::Strategy(Field* field,
                    const std::map<ShipType, uint64_t>& ship_types)
                    : field_(field)
                    , enemy_field_(enemy_field)
-                   , ship_types_(ship_types) {
+                   , ship_types_(ship_types)
+                   , field_width_(field->GetWidth())
+                   , field_height_(field->GetHeight()) {
     ships_count_[0] = ship_types.at(ShipType::kOne);
     ships_count_[1] = ship_types.at(ShipType::kTwo);
     ships_count_[2] = ship_types.at(ShipType::kThree);
@@ -15,6 +19,10 @@ Strategy::Strategy(Field* field,
 }
 
 ShotResult Strategy::RecieveShot(uint64_t x, uint64_t y) {
+    if (!is_game_started_) {
+        StartGame();
+    }
+
     if (!field_->HasShip(x, y)) {
         return ShotResult::kMiss;
     }

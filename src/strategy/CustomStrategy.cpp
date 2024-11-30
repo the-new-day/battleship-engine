@@ -10,4 +10,7 @@ FieldPoint CustomStrategy::MakeNextShot() {
     return last_shot_point_;
 }
 
+void CustomStrategy::StartGame() {
+}
+
 } // namespace Battleship

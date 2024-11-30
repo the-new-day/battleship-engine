@@ -5,64 +5,52 @@
 
 namespace Battleship {
 
+ConsoleApi::ConsoleApi(Battleship& game) : Api(game) {
+    commands = {
+        {"ping", [this](std::string_view){ std::cout << "pong"; return true; }},
+        {"exit", [this](std::string_view){ std::cout << "ok"; return false; }},
+        {"start", [this](std::string_view cmd){ return HandleStart(cmd); }},
+        {"stop", [this](std::string_view cmd){ return HandleStop(cmd); }},
+        {"shot", [this](std::string_view cmd){ return HandleShot(cmd); }},
+        {"finished", [this](std::string_view) { std::cout << (game_.IsFinished() ? "yes" : "no"); return true; }},
+        {"win", [this](std::string_view) { std::cout << (game_.IsWin() ? "yes" : "no"); return true; }},
+        {"lose", [this](std::string_view) { std::cout << (game_.IsLose() ? "yes" : "no"); return true; }},
+        {"set", [this](std::string_view cmd) { return ParseSet(cmd); }},
+        {"get", [this](std::string_view cmd) { return ParseGet(cmd); }},
+        {"create", [this](std::string_view cmd) { return ParseCreate(cmd); }},
+    };
+}
+
 void ConsoleApi::Start() {
     std::string command;
 
-    // TODO: refactor this...
+    while (std::getline(std::cin, command)) {
+        std::string_view command_name(command);
+        command_name = command_name.substr(0, command_name.find(' '));
 
-    while (std::cin >> command) {
-        if (command == "ping") {
-            std::cout << "pong";
-        } else if (command == "exit") {
-            std::cout << "ok\n";
-            return;
-        } else if (command == "start") {
-            if (is_game_created_ && game_.Start()) {
-                std::cout << "ok";
-                is_game_running_ = true;
-            } else {
-                std::cout << "failed";
+        if (!commands.contains(command_name)) {
+            std::cout << "unknown command\n";
+            continue;
+        }
+
+        if (!commands.at(command_name)(command)) {
+            if (command_name == "exit") {
+                break;
             }
-        } else if (command == "stop") {
-            if (!is_game_running_ || !game_.Stop()) {
-                std::cout << "failed";
-            } else {
-                std::cout << "ok";
-                is_game_running_ = false;
-            }
-        } else if (command == "shot") {
-            if (is_game_running_) {
-                auto point = game_.MakeNextShot().value();
-                std::cout << point.x << ' ' << point.y;
-            } else {
-                std::cout << "failed";
-            }
-        } else if (command == "finished") {
-            std::cout << (game_.IsFinished() ? "yes" : "no");
-        } else if (command == "win") {
-            std::cout << (game_.IsWin() ? "yes" : "no");
-        } else if (command == "lose") {
-            std::cout << (game_.IsLose() ? "yes" : "no");
-        } else if (command == "set") {
-            std::cout << (ParseSet() ? "ok" : "failed");
-        } else if (command == "get") {
-            if (!ParseGet()) {
-                std::cout << "failed";
-            }
-        } else if (command == "create") {
-            std::cout << (ParseCreate() ? "ok" : "failed");
+
+            std::cout << "failed";
         }
 
         std::cout << '\n';
     }
+
+    std::cout << '\n';
 }
 
-bool ConsoleApi::ParseSet() {
-    std::string parameter;
-    std::string value_str;
-
-    std::cin >> parameter;
-    std::cin >> value_str;
+bool ConsoleApi::ParseSet(std::string_view cmd) {
+    cmd = cmd.substr(cmd.find(' ') + 1);
+    std::string_view parameter = cmd.substr(0, cmd.find(' '));
+    std::string_view value_str = cmd.substr(parameter.length() + 1);
 
     if (parameter == "width") {
         std::optional<uint64_t> value = ParseNumber<uint64_t>(value_str);
@@ -76,26 +64,26 @@ bool ConsoleApi::ParseSet() {
         }
     } else if (parameter == "count") {
         ShipType ship_type;
+        std::string_view ship_type_str = value_str.substr(0, value_str.find(' '));
 
-        if (value_str == "1") {
+        if (ship_type_str == "1") {
             ship_type = ShipType::kOne;
-        } else if (value_str == "2") {
+        } else if (ship_type_str == "2") {
             ship_type = ShipType::kTwo;
-        } else if (value_str == "3") {
+        } else if (ship_type_str == "3") {
             ship_type = ShipType::kThree;
-        } else if (value_str == "4") {
+        } else if (ship_type_str == "4") {
             ship_type = ShipType::kFour;
         } else {
             return false;
         }
-
-        std::cin >> value_str;
+        
+        value_str = value_str.substr(value_str.find(' ') + 1);
         std::optional<uint64_t> amount = ParseNumber<uint64_t>(value_str);
-        if (!amount.has_value()) {
+        
+        if (!amount.has_value() || !game_.SetShipsCount(ship_type, amount.value())) {
             return false;
         }
-
-        return game_.SetShipsCount(ship_type, amount.value());
     } else if (parameter == "strategy") {
         if (value_str == "custom") {
             game_.SetStrategy(StrategyType::kCustom);
@@ -114,30 +102,33 @@ bool ConsoleApi::ParseSet() {
         } else {
             return false;
         }
+    } else {
+        return false;
     }
 
+    std::cout << "ok";
     return true;
 }
 
-bool ConsoleApi::ParseCreate() {
-    std::string value_str;
-    std::cin >> value_str;
+bool ConsoleApi::ParseCreate(std::string_view cmd) {
+    std::string_view strategy = cmd.substr(cmd.find(' ') + 1);
 
-    if (value_str == "slave") {
+    if (strategy == "slave") {
         game_.SetGameMode(GameMode::kSlave);
-    } else if (value_str == "master") {
+    } else if (strategy == "master") {
         game_.SetGameMode(GameMode::kMaster);
     } else {
         return false;
     }
 
     is_game_created_ = true;
+    std::cout << "ok";
     return true;
 }
 
-bool ConsoleApi::ParseGet() {
-    std::string parameter;
-    std::cin >> parameter;
+bool ConsoleApi::ParseGet(std::string_view cmd) {
+    cmd = cmd.substr(cmd.find(' ') + 1);
+    std::string_view parameter = cmd.substr(0, cmd.find(' '));
 
     if (parameter == "width") {
         auto width = game_.GetWidth();
@@ -155,8 +146,7 @@ bool ConsoleApi::ParseGet() {
         std::cout << height.value();
     } else if (parameter == "count") {
         ShipType ship_type;
-        std::string value_str;
-        std::cin >> value_str;
+        std::string_view value_str = cmd.substr(parameter.length() + 1);
 
         if (value_str == "1") {
             ship_type = ShipType::kOne;
@@ -171,13 +161,74 @@ bool ConsoleApi::ParseGet() {
         }
 
         std::cout << game_.GetShipsCount(ship_type);
+    } else {
+        return false;
     }
 
     return true;
 }
 
-bool ConsoleApi::ParseShot() {
-    return false;
+bool ConsoleApi::HandleShot(std::string_view cmd) {
+    if (!is_game_running_) {
+        return false;
+    }
+
+    if (cmd == "shot") {
+        auto point = game_.MakeNextShot();
+        if (!point.has_value()) {
+            return false;
+        }
+
+        std::cout << point.value().x << ' ' << point.value().y;
+        return true;
+    }
+
+    cmd = cmd.substr(5);
+    if (std::count(cmd.begin(), cmd.end(), ' ') != 1) {
+        return false;
+    }
+
+    std::string_view x_str = cmd.substr(0, cmd.find(' '));
+    std::string_view y_str = cmd.substr(cmd.find(' ') + 1);
+
+    auto x = ParseNumber<uint64_t>(x_str);
+    auto y = ParseNumber<uint64_t>(y_str);
+
+    if (!x.has_value() || !y.has_value()) {
+        return false;
+    }
+
+    ShotResult result = game_.RecieveShot(x.value(), y.value()).value();
+
+    if (result == ShotResult::kMiss) {
+        std::cout << "miss";
+    } else if (result == ShotResult::kKill) {
+        std::cout << "kill";
+    } else if (result == ShotResult::kHit) {
+        std::cout << "hit";
+    }
+
+    return true;
+}
+
+bool ConsoleApi::HandleStart(std::string_view cmd) {
+    if (cmd != "start" || !is_game_created_ || !game_.Start()) {
+        return false;
+    }
+
+    std::cout << "ok";
+    is_game_running_ = true;
+    return true;
+}
+
+bool ConsoleApi::HandleStop(std::string_view cmd) {
+    if (cmd != "stop" || !is_game_running_ || !game_.Stop()) {
+        return false;
+    }
+    
+    std::cout << "ok";
+    is_game_running_ = false;
+    return true;
 }
 
 } // namespace Battleship
