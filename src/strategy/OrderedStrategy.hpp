@@ -13,7 +13,6 @@ public:
                     : Strategy(field, enemy_field, ship_types) {};
              
     FieldPoint GetNextShot() const override;
-    FieldPoint MakeNextShot() override;
 
 private:
     void StartGame() override;

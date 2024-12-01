@@ -30,7 +30,7 @@ public:
              const std::map<ShipType, uint64_t>& ship_types);
 
     virtual FieldPoint GetNextShot() const = 0;
-    virtual FieldPoint MakeNextShot() = 0;
+    FieldPoint MakeNextShot();
 
     ShotResult RecieveShot(uint64_t x, uint64_t y);
     bool HasAliveShips() const;

@@ -16,9 +16,25 @@ Strategy::Strategy(Field* field,
     ships_count_[1] = ship_types.at(ShipType::kTwo);
     ships_count_[2] = ship_types.at(ShipType::kThree);
     ships_count_[3] = ship_types.at(ShipType::kFour);
+
+    // TODO: remove
+    field_->SetShip(0, 0);
+    field_->SetShip(1, 0);
 }
 
-ShotResult Strategy::RecieveShot(uint64_t x, uint64_t y) {
+FieldPoint Strategy::MakeNextShot() {
+    if (!is_game_started_) {
+        StartGame();
+        return last_shot_point_;
+    }
+
+    FieldPoint point = GetNextShot();
+    last_shot_point_ = point;
+    return last_shot_point_;
+}
+
+ShotResult Strategy::RecieveShot(uint64_t x, uint64_t y)
+{
     if (!is_game_started_) {
         StartGame();
     }

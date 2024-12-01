@@ -4,17 +4,6 @@
 
 namespace Battleship {
 
-FieldPoint OrderedStrategy::MakeNextShot() {
-    if (!is_game_started_) {
-        StartGame();
-        return last_shot_point_;
-    }
-
-    FieldPoint point = GetNextShot();
-    last_shot_point_ = point;
-    return last_shot_point_;
-}
-
 void OrderedStrategy::StartGame() {
     is_game_started_ = true;
     last_shot_point_ = FieldPoint{0, 0};

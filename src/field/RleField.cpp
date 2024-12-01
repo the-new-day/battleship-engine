@@ -26,4 +26,8 @@ void RleField::Clear() {
     
 }
 
+bool RleField::IsEmpty() const {
+    return false;
+}
+
 } // namespace Battleship

@@ -9,6 +9,10 @@ namespace Battleship {
 struct FieldPoint {
     uint64_t x;
     uint64_t y;
+
+    bool operator==(const FieldPoint& other) const {
+        return x == other.x && y == other.y;
+    }
 };
 
 class Field {
@@ -25,6 +29,7 @@ public:
     uint64_t GetHeight() const;
 
     virtual void Clear() = 0;
+    virtual bool IsEmpty() const = 0;
 
 protected:
     uint64_t width_;
