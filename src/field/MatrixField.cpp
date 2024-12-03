@@ -11,13 +11,12 @@ MartixField::MartixField(uint64_t width, uint64_t height) : Field(width, height)
     }
 }
 
-bool MartixField::SetShip(uint64_t x, uint64_t y) {
+void MartixField::SetShip(uint64_t x, uint64_t y) {
     if (!IsInBounds(x, y)) {
-        return false;
+        return;
     }
 
     matrix_[y][x] = true;
-    return true;
 }
 
 bool MartixField::HasShip(uint64_t x, uint64_t y) const {

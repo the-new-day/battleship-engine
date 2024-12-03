@@ -19,7 +19,7 @@ class Field {
 public:
     Field(uint64_t width, uint64_t height) : width_(width), height_(height) {};
 
-    virtual bool SetShip(uint64_t x, uint64_t y) = 0;
+    virtual void SetShip(uint64_t x, uint64_t y) = 0;
     virtual void RemoveShip(uint64_t x, uint64_t y) = 0;
 
     virtual bool HasShip(uint64_t x, uint64_t y) const = 0;

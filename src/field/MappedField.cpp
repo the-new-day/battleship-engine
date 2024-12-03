@@ -4,13 +4,12 @@ namespace Battleship {
 
 MappedField::MappedField(uint64_t width, uint64_t height) : Field(width, height) {}
 
-bool MappedField::SetShip(uint64_t x, uint64_t y) {
+void MappedField::SetShip(uint64_t x, uint64_t y) {
     if (!IsInBounds(x, y)) {
-        return false;
+        return;
     }
 
     points_.insert({x, y});
-    return true;
 }
 
 bool MappedField::HasShip(uint64_t x, uint64_t y) const {

@@ -1,16 +1,17 @@
 #pragma once
 
 #include "Field.hpp"
+#include "RleBlock.hpp"
 
 #include <vector>
 
 namespace Battleship {
 
-class RleBlocksField : public Field {
+class CompressedDenseField : public Field {
 public:
-    RleBlocksField(uint64_t width, uint64_t height);
+    CompressedDenseField(uint64_t width, uint64_t height);
 
-    bool SetShip(uint64_t x, uint64_t y) override;
+    void SetShip(uint64_t x, uint64_t y) override;
     bool HasShip(uint64_t x, uint64_t y) const override;
 
     void RemoveShip(uint64_t x, uint64_t y) override;
@@ -19,7 +20,7 @@ public:
     bool IsEmpty() const override;
 
 private:
-    
+    std::vector<RleBlock> rows_;
 };
     
 } // namespace Battleship

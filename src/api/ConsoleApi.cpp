@@ -48,6 +48,10 @@ void ConsoleApi::Start() {
 }
 
 bool ConsoleApi::ParseSet(std::string_view cmd) {
+    if (!is_game_created_) {
+        return false;
+    }
+
     cmd = cmd.substr(cmd.find(' ') + 1);
     std::string_view parameter = cmd.substr(0, cmd.find(' '));
     std::string_view value_str = cmd.substr(parameter.length() + 1);
@@ -111,6 +115,10 @@ bool ConsoleApi::ParseSet(std::string_view cmd) {
 }
 
 bool ConsoleApi::ParseCreate(std::string_view cmd) {
+    if (is_game_created_ && !game_.IsFinished()) {
+        return false;
+    }
+
     std::string_view strategy = cmd.substr(cmd.find(' ') + 1);
 
     if (strategy == "slave") {
@@ -127,6 +135,10 @@ bool ConsoleApi::ParseCreate(std::string_view cmd) {
 }
 
 bool ConsoleApi::ParseGet(std::string_view cmd) {
+    if (!is_game_created_) {
+        return false;
+    }
+    
     cmd = cmd.substr(cmd.find(' ') + 1);
     std::string_view parameter = cmd.substr(0, cmd.find(' '));
 

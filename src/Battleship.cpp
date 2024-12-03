@@ -1,7 +1,7 @@
 #include "Battleship.hpp"
 #include "field/MatrixField.hpp"
-#include "field/RleField.hpp"
-#include "field/RleBlocksField.hpp"
+#include "field/CompressedDenseField.hpp"
+#include "field/CompressedField.hpp"
 #include "field/MappedField.hpp"
 
 #include <iostream>
@@ -60,11 +60,11 @@ bool Battleship::IsWin() const {
 }
 
 void Battleship::CreateField() {
-    // if (static_cast<double>(field_width_.value()) / kMaxMatrixFieldArea * field_height_.value() < 1) {
-    //     field_ = new MartixField(field_width_.value(), field_height_.value());
-    //     enemy_field_ = new MartixField(field_width_.value(), field_height_.value());
-    //     return;
-    // }
+    if (static_cast<double>(field_width_.value()) / kMaxMatrixFieldArea * field_height_.value() < 1) {
+        field_ = new MartixField(field_width_.value(), field_height_.value());
+        enemy_field_ = new MartixField(field_width_.value(), field_height_.value());
+        return;
+    }
 
     double density = (static_cast<double>(ship_types_.at(ShipType::kOne)) / field_width_.value())
                    + (static_cast<double>(ship_types_.at(ShipType::kTwo)) / field_width_.value())
@@ -73,16 +73,15 @@ void Battleship::CreateField() {
 
     density /= field_height_.value();
 
-    // if (density < 0.25) {
-    //     field_ = new MappedField(field_width_.value(), field_height_.value());
-    // } else if (density < 0.75) {
-    //     field_ = new RleBlocksField(field_width_.value(), field_height_.value());
-    // } else {
-    //     field_ = new RleField(field_width_.value(), field_height_.value());
-    // }
-    field_ = new RleField(field_width_.value(), field_height_.value());
+    if (density < 0.25) {
+        field_ = new MappedField(field_width_.value(), field_height_.value());
+    } else if (density < 0.75) {
+        field_ = new CompressedField(field_width_.value(), field_height_.value());
+    } else {
+        field_ = new CompressedDenseField(field_width_.value(), field_height_.value());
+    }
 
-    enemy_field_ = new RleBlocksField(field_width_.value(), field_height_.value());
+    enemy_field_ = new CompressedField(field_width_.value(), field_height_.value());
 }
 
 void Battleship::InitStrategy() {
@@ -171,7 +170,7 @@ bool Battleship::IsFinished() const {
 }
 
 bool Battleship::SetFieldHeight(uint64_t height) {
-    if (game_mode_.has_value() && game_mode_.value() == GameMode::kMaster) {
+    if (!game_mode_.has_value() || game_mode_.value() == GameMode::kMaster) {
         return false;
     }
     
@@ -190,7 +189,7 @@ bool Battleship::SetFieldHeight(uint64_t height) {
 }
 
 bool Battleship::SetFieldWidth(uint64_t width) {
-    if (game_mode_.has_value() && game_mode_.value() == GameMode::kMaster) {
+    if (!game_mode_.has_value() || game_mode_.value() == GameMode::kMaster) {
         return false;
     }
 
@@ -208,22 +207,28 @@ bool Battleship::SetFieldWidth(uint64_t width) {
     return true;
 }
 
-void Battleship::SetGameMode(GameMode mode) {
+bool Battleship::SetGameMode(GameMode mode) {
+    if (game_mode_.has_value()) {
+        return false;
+    }
+
     game_mode_ = mode;
     HandleErrors();
     
     if (mode == GameMode::kMaster) {
         SetMasterConfig();
     }
+
+    return true;
 }
 
 bool Battleship::Start() {
-    if (!is_game_running_ && game_mode_ == GameMode::kMaster) {
-        SetMasterConfig();
-    }
-
     if (!IsPossibleToStart() || is_game_running_) {
         return false;
+    }
+
+    if (game_mode_ == GameMode::kMaster) {
+        SetMasterConfig();
     }
     
     RefreshGame();
@@ -236,6 +241,7 @@ bool Battleship::Start() {
     enemy_ships_count_[3] = ship_types_.at(ShipType::kFour);
 
     is_game_running_ = true;
+    is_game_finished_ = false;
     status_ = BattleshipStatus::kGameRunning;
     return true;
 }

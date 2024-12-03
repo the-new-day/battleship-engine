@@ -47,7 +47,7 @@ public:
     Battleship(const Battleship&) = delete;
     Battleship& operator=(const Battleship&) = delete;
 
-    void SetGameMode(GameMode mode);
+    bool SetGameMode(GameMode mode);
 
     bool Start();
     bool Stop();
