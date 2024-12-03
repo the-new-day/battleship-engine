@@ -10,7 +10,7 @@ namespace Battleship {
 
 class CompressedField : public Field {
 public:
-    CompressedField(uint64_t width, uint64_t height);
+    CompressedField(uint64_t width, uint64_t height) : Field(width, height) {};
 
     void SetShip(uint64_t x, uint64_t y) override;
     bool HasShip(uint64_t x, uint64_t y) const override;
@@ -18,7 +18,6 @@ public:
     void RemoveShip(uint64_t x, uint64_t y) override;
 
     void Clear() override;
-    bool IsEmpty() const override;
 
 private:
     static const uint32_t kRleBlockSize = 512;

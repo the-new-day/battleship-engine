@@ -41,8 +41,4 @@ void MartixField::Clear() {
     }
 }
 
-bool MartixField::IsEmpty() const {
-    return false;
-}
-
 } // namespace Battleship

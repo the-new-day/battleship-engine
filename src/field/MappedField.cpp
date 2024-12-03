@@ -24,8 +24,4 @@ void MappedField::Clear() {
     points_.clear();
 }
 
-bool MappedField::IsEmpty() const {
-    return points_.empty();
-}
-
 } // namespace Battleship

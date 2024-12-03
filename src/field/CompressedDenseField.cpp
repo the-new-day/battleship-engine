@@ -38,8 +38,4 @@ void CompressedDenseField::Clear() {
     }
 }
 
-bool CompressedDenseField::IsEmpty() const {
-    return false;
-}
-
 } // namespace Battleship

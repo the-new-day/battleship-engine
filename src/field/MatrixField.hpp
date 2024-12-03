@@ -16,7 +16,6 @@ public:
     void RemoveShip(uint64_t x, uint64_t y) override;
 
     void Clear() override;
-    bool IsEmpty() const override;
 
 private:
     std::vector<std::vector<bool>> matrix_;

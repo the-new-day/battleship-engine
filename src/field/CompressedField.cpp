@@ -2,10 +2,6 @@
 
 namespace Battleship {
 
-CompressedField::CompressedField(uint64_t width, uint64_t height) : Field(width, height) {
-    
-}
-
 void CompressedField::SetShip(uint64_t x, uint64_t y) {
     if (!IsInBounds(x, y)) {
         return;
@@ -28,10 +24,6 @@ void CompressedField::RemoveShip(uint64_t x, uint64_t y) {
 
 void CompressedField::Clear() {
     blocks_.clear();
-}
-
-bool CompressedField::IsEmpty() const {
-    return false;
 }
 
 FieldPoint CompressedField::GetBlockIndex(uint64_t x, uint64_t y) const {
