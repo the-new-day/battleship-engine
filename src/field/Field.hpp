@@ -29,7 +29,7 @@ public:
     uint64_t GetHeight() const;
 
     virtual void Clear() = 0;
-    virtual bool IsEmpty() const = 0;
+    virtual bool IsEmpty() const = 0; // TODO: do I really need this?
 
 protected:
     uint64_t width_;

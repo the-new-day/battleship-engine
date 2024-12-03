@@ -73,13 +73,14 @@ void Battleship::CreateField() {
 
     density /= field_height_.value();
 
-    if (density < 0.25) {
-        field_ = new MappedField(field_width_.value(), field_height_.value());
-    } else if (density < 0.75) {
-        field_ = new RleBlocksField(field_width_.value(), field_height_.value());
-    } else {
-        field_ = new RleField(field_width_.value(), field_height_.value());
-    }
+    // if (density < 0.25) {
+    //     field_ = new MappedField(field_width_.value(), field_height_.value());
+    // } else if (density < 0.75) {
+    //     field_ = new RleBlocksField(field_width_.value(), field_height_.value());
+    // } else {
+    //     field_ = new RleField(field_width_.value(), field_height_.value());
+    // }
+    field_ = new RleField(field_width_.value(), field_height_.value());
 
     enemy_field_ = new RleBlocksField(field_width_.value(), field_height_.value());
 }
@@ -245,6 +246,7 @@ bool Battleship::Stop() {
     }
 
     is_game_running_ = false;
+    is_game_finished_ = true;
     status_ = BattleshipStatus::kConfigurationDone;
     return true;
 }

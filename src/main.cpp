@@ -1,7 +1,3 @@
-#include <iostream>
-#include <string>
-
-#include "api/Api.hpp"
 #include "api/ConsoleApi.hpp"
 #include "Battleship.hpp"
 

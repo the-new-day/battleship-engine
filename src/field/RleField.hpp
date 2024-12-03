@@ -3,7 +3,6 @@
 #include "Field.hpp"
 
 #include <vector>
-#include <utility>
 
 namespace Battleship {
 
@@ -20,7 +19,17 @@ public:
     bool IsEmpty() const override;
 
 private:
-    
+    struct RleRow {
+        bool starts_with_zero = true;
+        std::vector<uint64_t> data;
+        // I was tempted to use std::list, but that would waste 16 extra bytes per node
+        // and besides, in the battleship, reading bits is much more common than writing them
+    };
+
+    std::vector<RleRow> rows_;
+
+    void SetBit(uint64_t x, uint64_t y, bool to_one);
+    bool IsOneAt(uint64_t x, uint64_t y) const;
 };
     
 } // namespace Battleship

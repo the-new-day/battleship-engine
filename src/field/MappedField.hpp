@@ -22,8 +22,12 @@ public:
 
 private:
     struct FieldPointHash {
-        inline std::size_t operator()(const FieldPoint& point) const {
-            return std::hash<uint64_t>()(point.x) ^ std::hash<uint64_t>()(point.y);
+        size_t operator()(const FieldPoint& point) const {
+            size_t hash1 = std::hash<uint64_t>{}(point.x);
+            size_t hash2 = std::hash<uint64_t>{}(point.y);
+            return hash1
+                   ^ (hash2 + 0x9e3779b9 + (hash1 << 6)
+                   + (hash1 >> 2));
         }
     };
     

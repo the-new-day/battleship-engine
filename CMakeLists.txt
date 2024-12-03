@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-project(Battleshop VERSION 0.0.1 LANGUAGES C CXX)
+project(Battleship VERSION 0.0.1 LANGUAGES C CXX)
 
 SET(CMAKE_CXX_STANDARD 23)
 
