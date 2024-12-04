@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <map>
 #include <array>
+#include <unordered_set>
 
 namespace Battleship {
 
@@ -22,6 +23,7 @@ enum class ShipType {
 };
 
 const size_t kShipTypesAmount = 4;
+const size_t kShipMaxLength = 4;
 
 class Strategy {
 public:
@@ -51,6 +53,8 @@ protected:
     uint64_t field_height_;
     std::map<ShipType, uint64_t> ship_types_;
 
+    std::unordered_set<FieldPoint, FieldPointHash> hit_points_;
+
     bool is_game_started_ = false;
 
     Field* field_;
@@ -63,6 +67,11 @@ protected:
     void DecreaseShipsAmount();
 
     virtual void StartGame() = 0;
+
+    bool IsHitFatal(uint64_t x, uint64_t y, const std::vector<FieldPoint>& ship_cells) const;
+    bool IsShipAt(uint64_t x, uint64_t y) const;
+
+    void FindShipCells(uint64_t x, uint64_t y, std::vector<FieldPoint>& cells) const;
 };
 
 } // namespace Battleship

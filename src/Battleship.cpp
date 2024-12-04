@@ -52,11 +52,11 @@ void Battleship::HandleErrors() {
 }
 
 bool Battleship::IsLose() const {
-    return is_game_finished_ && !strategy_->HasAliveShips();
+    return !strategy_->HasAliveShips();
 }
 
 bool Battleship::IsWin() const {
-    return is_game_finished_ && !EnemyHasShips();
+    return !EnemyHasShips();
 }
 
 void Battleship::CreateField() {
@@ -109,8 +109,8 @@ void Battleship::ChangeStrategy() {
 
 void Battleship::DecreaseEnemyShipsAmount() {
     for (size_t i = 0; i < kShipTypesAmount; ++i) {
-        if (enemy_ships_count_[0] > 0) {
-            --enemy_ships_count_[0];
+        if (enemy_ships_count_[i] > 0) {
+            --enemy_ships_count_[i];
             return;
         }
     }
@@ -118,7 +118,7 @@ void Battleship::DecreaseEnemyShipsAmount() {
 
 bool Battleship::EnemyHasShips() const {
     for (size_t i = 0; i < kShipTypesAmount; ++i) {
-        if (enemy_ships_count_[0] > 0) {
+        if (enemy_ships_count_[i] > 0) {
             return true;
         }
     }
@@ -166,7 +166,7 @@ void Battleship::SetLastShotResult(ShotResult result) {
 }
 
 bool Battleship::IsFinished() const {
-    return is_game_finished_;
+    return is_game_finished_; // TODO: also true if all ships killed
 }
 
 bool Battleship::SetFieldHeight(uint64_t height) {

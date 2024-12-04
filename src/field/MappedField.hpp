@@ -20,16 +20,6 @@ public:
     void Clear() override;
 
 private:
-    struct FieldPointHash {
-        size_t operator()(const FieldPoint& point) const {
-            size_t hash1 = std::hash<uint64_t>{}(point.x);
-            size_t hash2 = std::hash<uint64_t>{}(point.y);
-            return hash1
-                   ^ (hash2 + 0x9e3779b9 + (hash1 << 6)
-                   + (hash1 >> 2));
-        }
-    };
-    
     std::unordered_set<FieldPoint, FieldPointHash> points_;
 };
     

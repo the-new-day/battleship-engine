@@ -1,6 +1,7 @@
 #include "Strategy.hpp"
 
 #include <iostream>
+#include <algorithm>
 
 namespace Battleship {
 
@@ -30,13 +31,6 @@ FieldPoint Strategy::MakeNextShot() {
 }
 
 ShotResult Strategy::RecieveShot(uint64_t x, uint64_t y) {
-    for (size_t y = 0; y < field_->GetHeight(); ++y) {
-        for (size_t x = 0; x < field_->GetWidth(); ++x) {
-            std::cout << field_->HasShip(x, y);
-        }
-        std::cout << '\n';
-    }
-
     if (!is_game_started_) {
         StartGame();
     }
@@ -46,47 +40,56 @@ ShotResult Strategy::RecieveShot(uint64_t x, uint64_t y) {
     }
 
     ShotResult result = ShotResult::kHit;
-    if ((x == field_width_ - 1 || !field_->HasShip(x + 1, y))
-    && (y == field_height_ - 1 || !field_->HasShip(x, y + 1))
-    && (x == 0 || !field_->HasShip(x - 1, y))
-    && (y == 0 || !field_->HasShip(x, y - 1))) {
+
+    std::vector<FieldPoint> ship_cells;
+    ship_cells.reserve(kShipMaxLength);
+
+    FindShipCells(x, y, ship_cells);
+    
+    if (IsHitFatal(x, y, ship_cells)) {
+        for (const FieldPoint& cell : ship_cells) {
+            hit_points_.erase(cell);
+        }
+
         DecreaseShipsAmount();
         result = ShotResult::kKill;
+    } else {
+        hit_points_.insert({x, y});
     }
 
     field_->RemoveShip(x, y);
     return result;
 }
 
-bool Strategy::HasAliveShips() const {
-    for (size_t i = 0; i < kShipTypesAmount; ++i) {
-        if (ships_count_[0] > 0) {
-            return true;
+bool Strategy::IsHitFatal(uint64_t x, uint64_t y, const std::vector<FieldPoint>& ship_cells) const {
+    if (ship_cells.empty()) {
+        return false;
+    }
+
+    for (const FieldPoint& cell : ship_cells) {
+        if ((cell.x != x || cell.y != y) && field_->HasShip(cell.x, cell.y)) {
+            return false;
         }
     }
 
-    return false;
+    return true;
 }
 
-const std::map<ShipType, uint64_t>& Strategy::GetShipTypes() const {
-    return ship_types_;
+bool Strategy::IsShipAt(uint64_t x, uint64_t y) const {
+    return hit_points_.contains({x, y}) || field_->HasShip(x, y);
 }
 
-uint64_t Strategy::GetFieldWidth() const {
-    return field_width_;
-}
-
-uint64_t Strategy::GetFieldHeight() const {
-    return field_height_;
-}
-
-void Strategy::DecreaseShipsAmount() {
-    for (size_t i = 0; i < kShipTypesAmount; ++i) {
-        if (ships_count_[0] > 0) {
-            --ships_count_[0];
-            return;
-        }
+void Strategy::FindShipCells(uint64_t x, uint64_t y, std::vector<FieldPoint>& cells) const {
+    if (!IsShipAt(x, y) || std::count(cells.begin(), cells.end(), FieldPoint{x, y}) != 0) {
+        return;
     }
+
+    cells.emplace_back(x, y);
+
+    if (x < field_width_) FindShipCells(x + 1, y, cells);
+    if (y < field_height_) FindShipCells(x, y + 1, cells);
+    if (x > 0) FindShipCells(x - 1, y, cells);
+    if (y > 0) FindShipCells(x, y - 1, cells);
 }
 
 void Strategy::SetLastShotCoords(uint64_t x, uint64_t y) {
@@ -108,6 +111,37 @@ ShotResult Strategy::GetLastShotResult() const {
 
 FieldPoint Strategy::GetLastShotPoint() const {
     return last_shot_point_;
+}
+
+const std::map<ShipType, uint64_t>& Strategy::GetShipTypes() const {
+    return ship_types_;
+}
+
+uint64_t Strategy::GetFieldWidth() const {
+    return field_width_;
+}
+
+uint64_t Strategy::GetFieldHeight() const {
+    return field_height_;
+}
+
+bool Strategy::HasAliveShips() const {
+    for (size_t i = 0; i < kShipTypesAmount; ++i) {
+        if (ships_count_[i] > 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void Strategy::DecreaseShipsAmount() {
+    for (size_t i = 0; i < kShipTypesAmount; ++i) {
+        if (ships_count_[i] > 0) {
+            --ships_count_[i];
+            return;
+        }
+    }
 }
 
 } // namespace Battleship

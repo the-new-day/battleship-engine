@@ -8,7 +8,6 @@
 
 #include <map>
 #include <string>
-#include <utility>
 #include <optional>
 
 namespace Battleship {
