@@ -6,6 +6,7 @@
 #include <map>
 #include <array>
 #include <unordered_set>
+#include <ctime>
 
 namespace Battleship {
 
@@ -15,7 +16,7 @@ enum class ShotResult {
     kKill
 };
 
-enum class ShipType {
+enum class ShipType : uint8_t {
     kOne = 1,
     kTwo = 2,
     kThree = 3,
@@ -48,10 +49,14 @@ public:
     ShotResult GetLastShotResult() const;
     FieldPoint GetLastShotPoint() const;
 
+    bool PlaceShips();
+
 protected:
     uint64_t field_width_;
     uint64_t field_height_;
     std::map<ShipType, uint64_t> ship_types_;
+
+    uint64_t ship_placement_seed = 0;
 
     std::unordered_set<FieldPoint, FieldPointHash> hit_points_;
 
@@ -72,6 +77,14 @@ protected:
     bool IsShipAt(uint64_t x, uint64_t y) const;
 
     void FindShipCells(uint64_t x, uint64_t y, std::vector<FieldPoint>& cells) const;
+
+    void PlaceShip(uint64_t x, uint64_t y, ShipType type, bool is_horizontal);
+    bool IsPossibleToPlaceShip(uint64_t x, uint64_t y, ShipType type, bool is_horizontal) const;
+
+    uint8_t GetShipSize(ShipType type) const;
+
+    bool IsNeighbourhoodFree(uint64_t x, uint64_t y) const;
+    bool PlaceShipsLinear();
 };
 
 } // namespace Battleship

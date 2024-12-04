@@ -8,16 +8,6 @@ CustomStrategy::CustomStrategy(Field* field,
                                Field* enemy_field,
                                const std::map<ShipType, uint64_t>& ship_types) 
                                : Strategy(field, enemy_field, ship_types) {
-    
-
-    field_->SetShip(0, 0);
-
-    field_->SetShip(2, 0);
-    field_->SetShip(3, 0);
-    field_->SetShip(4, 0);
-
-    field_->SetShip(8, 0);
-    field_->SetShip(9, 0);
 }
 
 FieldPoint CustomStrategy::GetNextShot() const {

@@ -23,7 +23,6 @@ Battleship::~Battleship() {
 }
 
 bool Battleship::IsPossibleToStart() const {
-    // TODO: check if possible to place ships
     return game_mode_.has_value() && status_ == BattleshipStatus::kConfigurationDone;
 }
 
@@ -166,7 +165,7 @@ void Battleship::SetLastShotResult(ShotResult result) {
 }
 
 bool Battleship::IsFinished() const {
-    return is_game_finished_; // TODO: also true if all ships killed
+    return is_game_finished_ || !strategy_->HasAliveShips() || !EnemyHasShips();
 }
 
 bool Battleship::SetFieldHeight(uint64_t height) {
@@ -239,6 +238,11 @@ bool Battleship::Start() {
     enemy_ships_count_[1] = ship_types_.at(ShipType::kTwo);
     enemy_ships_count_[2] = ship_types_.at(ShipType::kThree);
     enemy_ships_count_[3] = ship_types_.at(ShipType::kFour);
+
+    if (!strategy_->PlaceShips()) {
+        status_ = BattleshipStatus::kWrongParameter;
+        return false;
+    }
 
     is_game_running_ = true;
     is_game_finished_ = false;
