@@ -12,10 +12,10 @@ namespace Battleship {
 const uint64_t kMaxMatrixFieldArea = 251'658'240;
 
 Battleship::Battleship() {
-    ship_types_[ShipType::kOne] = 0;
-    ship_types_[ShipType::kTwo] = 0;
-    ship_types_[ShipType::kThree] = 0;
-    ship_types_[ShipType::kFour] = 0;
+    ships_count_[ShipType::kOne] = 0;
+    ships_count_[ShipType::kTwo] = 0;
+    ships_count_[ShipType::kThree] = 0;
+    ships_count_[ShipType::kFour] = 0;
 }
 
 Battleship::~Battleship() {
@@ -39,10 +39,10 @@ void Battleship::HandleErrors() {
     if (!game_mode_.has_value() 
     || !field_width_.has_value() 
     || !field_height_.has_value() 
-    || (ship_types_.at(ShipType::kOne) == 0
-    && ship_types_.at(ShipType::kTwo) == 0
-    && ship_types_.at(ShipType::kThree) == 0
-    && ship_types_.at(ShipType::kFour) == 0)) {
+    || (ships_count_.at(ShipType::kOne) == 0
+    && ships_count_.at(ShipType::kTwo) == 0
+    && ships_count_.at(ShipType::kThree) == 0
+    && ships_count_.at(ShipType::kFour) == 0)) {
         status_ = BattleshipStatus::kConfigurationNotSet;
         return;
     }
@@ -51,41 +51,16 @@ void Battleship::HandleErrors() {
 }
 
 bool Battleship::IsLose() const {
-    return !strategy_->HasAliveShips();
+    return !ship_handler->HasAliveShips();
 }
 
 bool Battleship::IsWin() const {
     return !EnemyHasShips();
 }
 
-void Battleship::CreateField() {
-    if (static_cast<double>(field_width_.value()) / kMaxMatrixFieldArea * field_height_.value() < 1) {
-        field_ = new MartixField(field_width_.value(), field_height_.value());
-        enemy_field_ = new MartixField(field_width_.value(), field_height_.value());
-        return;
-    }
-
-    double density = (static_cast<double>(ship_types_.at(ShipType::kOne)) / field_width_.value())
-                   + (static_cast<double>(ship_types_.at(ShipType::kTwo)) / field_width_.value())
-                   + (static_cast<double>(ship_types_.at(ShipType::kThree)) / field_width_.value())
-                   + (static_cast<double>(ship_types_.at(ShipType::kFour)) / field_width_.value());
-
-    density /= field_height_.value();
-
-    if (density < 0.25) {
-        field_ = new MappedField(field_width_.value(), field_height_.value());
-    } else if (density < 0.75) {
-        field_ = new CompressedField(field_width_.value(), field_height_.value());
-    } else {
-        field_ = new CompressedDenseField(field_width_.value(), field_height_.value());
-    }
-
-    enemy_field_ = new CompressedField(field_width_.value(), field_height_.value());
-}
-
 void Battleship::InitStrategy() {
-    ordered_strategy_ = new OrderedStrategy(field_, enemy_field_, ship_types_);
-    custom_strategy_ = new CustomStrategy(field_, enemy_field_, ship_types_);
+    ordered_strategy_ = new OrderedStrategy(field_width_.value(), field_height_.value(), ships_count_);
+    custom_strategy_ = new CustomStrategy(field_width_.value(), field_height_.value(), ships_count_);
 
     if (strategy_type_ == StrategyType::kOrdered) {
         strategy_ = ordered_strategy_;
@@ -104,6 +79,10 @@ void Battleship::ChangeStrategy() {
 
     strategy_->SetLastShotCoords(last_shot_point_);
     strategy_->SetLastShotResult(last_shot_result_);
+}
+
+void Battleship::SetShipHandler() {
+    ship_handler = new ShipHandler(field_width_.value(), field_height_.value(), ships_count_);
 }
 
 void Battleship::DecreaseEnemyShipsAmount() {
@@ -148,7 +127,7 @@ std::optional<ShotResult> Battleship::RecieveShot(uint64_t x, uint64_t y) {
         return std::nullopt;
     }
 
-    last_shot_result_ = strategy_->RecieveShot(x, y);
+    last_shot_result_ = ship_handler->ProcessShot(x, y);
     return last_shot_result_;
 }
 
@@ -165,7 +144,7 @@ void Battleship::SetLastShotResult(ShotResult result) {
 }
 
 bool Battleship::IsFinished() const {
-    return is_game_finished_ || !strategy_->HasAliveShips() || !EnemyHasShips();
+    return is_game_finished_ || !ship_handler->HasAliveShips() || !EnemyHasShips();
 }
 
 bool Battleship::SetFieldHeight(uint64_t height) {
@@ -231,15 +210,16 @@ bool Battleship::Start() {
     }
     
     RefreshGame();
-    CreateField();
     InitStrategy();
+    SetShipHandler();
 
-    enemy_ships_count_[0] = ship_types_.at(ShipType::kOne);
-    enemy_ships_count_[1] = ship_types_.at(ShipType::kTwo);
-    enemy_ships_count_[2] = ship_types_.at(ShipType::kThree);
-    enemy_ships_count_[3] = ship_types_.at(ShipType::kFour);
+    // TODO: should be in Strategy
+    enemy_ships_count_[0] = ships_count_.at(ShipType::kOne);
+    enemy_ships_count_[1] = ships_count_.at(ShipType::kTwo);
+    enemy_ships_count_[2] = ships_count_.at(ShipType::kThree);
+    enemy_ships_count_[3] = ships_count_.at(ShipType::kFour);
 
-    if (!strategy_->PlaceShips()) {
+    if (!ship_handler->PlaceShips()) {
         status_ = BattleshipStatus::kWrongParameter;
         return false;
     }
@@ -274,30 +254,29 @@ bool Battleship::SetShipsCount(ShipType type, uint64_t amount) {
         return false;
     }
 
-    ship_types_[type] = amount;
+    ships_count_[type] = amount;
     HandleErrors();
     return true;
 }
 
 uint64_t Battleship::GetShipsCount(ShipType type) const {
-    if (!ship_types_.contains(type)) {
+    if (!ships_count_.contains(type)) {
         return 0;
     }
 
-    return ship_types_.at(type);
+    return ships_count_.at(type);
 }
 
 void Battleship::RefreshGame() {
-    delete field_;
-    delete enemy_field_;
     delete ordered_strategy_;
     delete custom_strategy_;
+    delete ship_handler;
 }
 
 void Battleship::SetMasterConfig() {
     field_width_ = kMasterModeFieldWidth;
     field_height_ = kMasterModeFieldHeight;
-    ship_types_ = kMasterModeShipsCount;
+    ships_count_ = kMasterModeShipsCount;
     HandleErrors();
 }
 

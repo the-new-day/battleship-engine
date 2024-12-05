@@ -4,12 +4,6 @@
 
 namespace Battleship {
 
-CustomStrategy::CustomStrategy(Field* field,
-                               Field* enemy_field,
-                               const std::map<ShipType, uint64_t>& ship_types) 
-                               : Strategy(field, enemy_field, ship_types) {
-}
-
 FieldPoint CustomStrategy::GetNextShot() const {
     return last_shot_point_;
 }

@@ -6,6 +6,8 @@
 #include "strategy/OrderedStrategy.hpp"
 #include "strategy/CustomStrategy.hpp"
 
+#include "ShipHandler.hpp"
+
 #include <map>
 #include <string>
 #include <optional>
@@ -83,12 +85,11 @@ private:
     bool is_game_running_ = false;
     bool is_game_finished_ = false;
 
-    Field* field_ = nullptr;
-    Field* enemy_field_ = nullptr;
+    ShipHandler* ship_handler = nullptr;
 
     std::optional<GameMode> game_mode_;
 
-    std::map<ShipType, uint64_t> ship_types_;
+    std::map<ShipType, uint64_t> ships_count_;
 
     StrategyType strategy_type_ = StrategyType::kCustom;
 
@@ -110,9 +111,9 @@ private:
 
     void HandleErrors();
 
-    void CreateField();
     void InitStrategy();
     void ChangeStrategy();
+    void SetShipHandler();
     
     void DecreaseEnemyShipsAmount();
     bool EnemyHasShips() const;

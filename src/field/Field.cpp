@@ -1,5 +1,7 @@
 #include "Field.hpp"
 
+#include <fstream>
+
 namespace Battleship {
 
 bool Field::IsInBounds(uint64_t x, uint64_t y) const {
