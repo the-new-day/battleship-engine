@@ -38,7 +38,7 @@ bool ShipHandler::LoadFromFile(const std::string& filename) {
     SetField();
     ships_count_.clear();
 
-    uint8_t ship_size;
+    uint16_t ship_size;
     char direction;
     uint64_t x;
     uint64_t y;
@@ -63,11 +63,69 @@ bool ShipHandler::LoadFromFile(const std::string& filename) {
         ++ships_count_[ship_type];
     }
 
+    return file.eof();
+}
+
+bool ShipHandler::Dump(const std::string& filename) const {
+    std::ofstream file(filename);
+
+    if (!file.good()) {
+        return false;
+    }
+
+    file << field_width_ << ' ' << field_height_ << '\n';
+    DumpHorizontalShips(file);
+    DumpVerticalShips(file);
+
     return true;
 }
 
-ShotResult ShipHandler::ProcessShot(uint64_t x, uint64_t y)
-{
+void ShipHandler::DumpHorizontalShips(std::ofstream& file) const {
+    for (uint64_t y = 0; y < field_height_; ++y) {
+        for (uint64_t x = 0; x < field_width_; ++x) {
+            std::vector<FieldPoint> cells;
+            FindShipCells(x, y, cells);
+
+            if (cells.empty()) {
+                continue;
+            }
+
+            if (cells.size() == 1) {
+                file << "1 h " << x << ' ' << y << '\n';
+                continue;
+            }
+
+            if (cells[1].y != y) {
+                continue;
+            }
+
+            file << cells.size() << " h " << x << ' ' << y << '\n';
+            x += cells.size();
+        }
+    }
+}
+
+void ShipHandler::DumpVerticalShips(std::ofstream& file) const {
+    for (uint64_t x = 0; x < field_width_; ++x) {
+        for (uint64_t y = 0; y < field_height_; ++y) {
+            std::vector<FieldPoint> cells;
+            FindShipCells(x, y, cells);
+
+            if (cells.empty() || cells.size() == 1) {
+                continue;
+            }
+
+            if (cells[1].x != x) {
+                continue;
+            }
+
+            file << cells.size() << " v " << x << ' ' << y << '\n';
+            y += cells.size();
+        }
+    }
+}
+
+ShotResult ShipHandler::ProcessShot(uint64_t x, uint64_t y) {
     if (!field_->HasShip(x, y)) {
         return ShotResult::kMiss;
     }
@@ -289,6 +347,10 @@ uint64_t ShipHandler::GetFieldWidth() const {
 
 uint64_t ShipHandler::GetFieldHeight() const {
     return field_height_;
+}
+
+uint64_t ShipHandler::GetShipsCount(ShipType ship_type) const {
+    return ships_count_.at(ship_type);
 }
 
 } // namespace Battleship

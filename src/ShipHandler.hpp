@@ -6,6 +6,7 @@
 #include <map>
 #include <cstdint>
 #include <string>
+#include <fstream>
 
 namespace Battleship {
 
@@ -34,12 +35,14 @@ public:
     uint64_t GetFieldHeight() const;
 
     bool LoadFromFile(const std::string& filename);
-    bool Dump(const std::string& filename);
+    bool Dump(const std::string& filename) const;
 
     ShotResult ProcessShot(uint64_t x, uint64_t y);
     bool HasAliveShips() const;
 
     bool PlaceShips();
+
+    uint64_t GetShipsCount(ShipType ship_type) const;
 
 private:
     uint64_t field_width_;
@@ -69,6 +72,9 @@ private:
     bool PlaceShipsLinear();
 
     void SetField();
+
+    void DumpHorizontalShips(std::ofstream& file) const;
+    void DumpVerticalShips(std::ofstream& file) const;
 };
     
 } // namespace Battleship

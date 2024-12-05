@@ -226,7 +226,7 @@ bool ConsoleApi::HandleShot(std::string_view cmd) {
 }
 
 bool ConsoleApi::HandleStart(std::string_view cmd) {
-    if (cmd != "start" || !is_game_created_ || !game_.Start()) {
+    if (cmd != "start" || !game_.Start()) {
         return false;
     }
 
@@ -236,7 +236,7 @@ bool ConsoleApi::HandleStart(std::string_view cmd) {
 }
 
 bool ConsoleApi::HandleStop(std::string_view cmd) {
-    if (cmd != "stop" || !is_game_running_ || !game_.Stop()) {
+    if (cmd != "stop" || !game_.Stop()) {
         return false;
     }
     
@@ -246,10 +246,21 @@ bool ConsoleApi::HandleStop(std::string_view cmd) {
 }
 
 bool ConsoleApi::HandleLoad(std::string_view cmd) {
+    if (game_.LoadFrom(std::string(cmd.substr(5)))) {
+        std::cout << "ok";
+        is_game_created_ = true;
+        return true;
+    }
+
     return false;
 }
 
 bool ConsoleApi::HandleDump(std::string_view cmd) {
+    if (game_.Dump(std::string(cmd.substr(5)))) {
+        std::cout << "ok";
+        return true;
+    }
+
     return false;
 }
 
