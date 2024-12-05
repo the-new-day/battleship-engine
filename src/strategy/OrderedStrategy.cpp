@@ -9,7 +9,7 @@ void OrderedStrategy::StartGame() {
     last_shot_point_ = FieldPoint{0, 0};
 }
 
-FieldPoint OrderedStrategy::GetNextShot() const {
+FieldPoint OrderedStrategy::GetNextShot() {
     FieldPoint point = last_shot_point_;
     if (last_shot_point_.x != field_width_ - 1) {
         point.x = last_shot_point_.x + 1;

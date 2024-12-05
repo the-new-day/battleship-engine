@@ -53,10 +53,6 @@ private:
 
     uint64_t ship_placement_seed;
 
-    // TODO: what if file gets deleted
-    bool was_loaded_from_file = false;
-    std::string filename;
-
     Field* field_;
 
     bool IsHitFatal(uint64_t x, uint64_t y, const std::vector<FieldPoint>& ship_cells) const;
@@ -78,4 +74,3 @@ private:
 };
     
 } // namespace Battleship
-

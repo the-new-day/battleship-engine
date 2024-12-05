@@ -11,6 +11,8 @@ namespace Battleship {
 // Max area of a field that can be stored in a simple binary matrix (30 MB)
 const uint64_t kMaxMatrixFieldArea = 251'658'240;
 
+const uint64_t kMaxProbabilityStrategySize = 1'000'000;
+
 Battleship::Battleship() {
     ships_count_[ShipType::kOne] = 0;
     ships_count_[ShipType::kTwo] = 0;
@@ -89,33 +91,26 @@ bool Battleship::IsWin() const {
 
 void Battleship::InitStrategy() {
     ordered_strategy_ = new OrderedStrategy(field_width_.value(), field_height_.value(), ships_count_);
-    custom_strategy_ = new CustomStrategy(field_width_.value(), field_height_.value(), ships_count_);
+    parity_strategy_ = new ParityStrategy(field_width_.value(), field_height_.value(), ships_count_);
+    probability_strategy_ = new ProbabilityStrategy(field_width_.value(), field_height_.value(), ships_count_);
 
-    if (strategy_type_ == StrategyType::kOrdered) {
-        strategy_ = ordered_strategy_;
-        return;
-    }
-
-    strategy_ = custom_strategy_;
+    ChangeStrategy();
 }
 
 void Battleship::ChangeStrategy() {
     if (strategy_type_ == StrategyType::kOrdered) {
         strategy_ = ordered_strategy_;
+    } else if (strategy_type_ == StrategyType::kParity) {
+        strategy_ = parity_strategy_;
+    } else if (strategy_type_ == StrategyType::kProbability) {
+        strategy_ = probability_strategy_;
     } else {
-        strategy_ = custom_strategy_;
-    }
-
-    strategy_->SetLastShotCoords(last_shot_point_);
-    strategy_->SetLastShotResult(last_shot_result_);
-}
-
-void Battleship::DecreaseEnemyShipsAmount() {
-    for (size_t i = 0; i < kShipTypesAmount; ++i) {
-        if (enemy_ships_count_[i] > 0) {
-            --enemy_ships_count_[i];
+        if (static_cast<double>(field_width_.value()) / kMaxProbabilityStrategySize * field_height_.value() < 1) {
+            strategy_ = probability_strategy_;
             return;
         }
+
+        strategy_ = parity_strategy_;
     }
 }
 
@@ -133,8 +128,7 @@ std::optional<FieldPoint> Battleship::MakeNextShot() {
         return std::nullopt;
     }
 
-    last_shot_point_ = strategy_->MakeNextShot();
-    return last_shot_point_;
+    return strategy_->MakeNextShot();
 }
 
 std::optional<ShotResult> Battleship::RecieveShot(uint64_t x, uint64_t y) {
@@ -142,19 +136,12 @@ std::optional<ShotResult> Battleship::RecieveShot(uint64_t x, uint64_t y) {
         return std::nullopt;
     }
 
-    last_shot_result_ = ship_handler_->ProcessShot(x, y);
-    return last_shot_result_;
+    return ship_handler_->ProcessShot(x, y);
 }
 
 void Battleship::SetLastShotResult(ShotResult result) {
     if (strategy_ != nullptr) {
         strategy_->SetLastShotResult(result);
-    }
-
-    last_shot_result_ = result;
-
-    if (result == ShotResult::kKill) {
-        DecreaseEnemyShipsAmount();
     }
 }
 
@@ -276,11 +263,13 @@ uint64_t Battleship::GetShipsCount(ShipType type) const {
 
 void Battleship::RefreshGame() {
     delete ordered_strategy_;
-    delete custom_strategy_;
+    delete parity_strategy_;
+    delete probability_strategy_;
     delete ship_handler_;
 
     ordered_strategy_ = nullptr;
-    custom_strategy_ = nullptr;
+    probability_strategy_ = nullptr;
+    parity_strategy_ = nullptr;
     ship_handler_ = nullptr;
 }
 

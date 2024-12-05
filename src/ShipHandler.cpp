@@ -36,7 +36,10 @@ bool ShipHandler::LoadFromFile(const std::string& filename) {
     }
 
     SetField();
-    ships_count_.clear();
+    
+    for (auto& p : ships_count_) {
+        p.second = 0;
+    }
 
     uint16_t ship_size;
     char direction;
@@ -332,8 +335,8 @@ uint8_t ShipHandler::GetShipSize(ShipType type) const {
 }
 
 bool ShipHandler::HasAliveShips() const {
-    for (size_t i = 0; i < kShipTypesAmount; ++i) {
-        if (ships_count_.at(ShipType(i)) > 0) {
+    for (const auto& p : ships_count_) {
+        if (p.second != 0) {
             return true;
         }
     }

@@ -23,7 +23,6 @@ private:
 
     std::vector<uint64_t> data_;
     // I was tempted to use std::list, but that would waste 16 extra bytes per node
-    // and besides, in the battleship, reading bits is much more common than writing them
 
     bool IsInBounds(uint64_t x, uint64_t y) const;
 };

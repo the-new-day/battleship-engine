@@ -4,7 +4,8 @@
 
 #include "strategy/Strategy.hpp"
 #include "strategy/OrderedStrategy.hpp"
-#include "strategy/CustomStrategy.hpp"
+#include "strategy/ParityStrategy.hpp"
+#include "strategy/ProbabilityStrategy.hpp"
 
 #include "ShipHandler.hpp"
 
@@ -21,7 +22,9 @@ enum class GameMode {
 
 enum class StrategyType {
     kCustom,
-    kOrdered
+    kOrdered,
+    kParity,
+    kProbability
 };
 
 enum class BattleshipStatus {
@@ -94,29 +97,21 @@ private:
     StrategyType strategy_type_ = StrategyType::kCustom;
 
     Strategy* strategy_ = nullptr;
+
     OrderedStrategy* ordered_strategy_ = nullptr;
-    CustomStrategy* custom_strategy_ = nullptr;
+    ParityStrategy* parity_strategy_ = nullptr;
+    ProbabilityStrategy* probability_strategy_ = nullptr;
 
     std::optional<uint64_t> field_width_;
     std::optional<uint64_t> field_height_;
 
     BattleshipStatus status_ = BattleshipStatus::kConfigurationNotSet;
 
-    ShotResult last_shot_result_;
-    FieldPoint last_shot_point_;
-
-    // made only so that up to 4 * (2^64 - 1) ships can be stored
-    // does not represent the number of ships of a particular type
-    std::array<uint64_t, kShipTypesAmount> enemy_ships_count_;
-
     void HandleErrors();
 
     void InitStrategy();
     void ChangeStrategy();
     void SetShipHandler();
-    
-    void DecreaseEnemyShipsAmount();
-
     void RefreshGame();
 
     void SetMasterConfig();

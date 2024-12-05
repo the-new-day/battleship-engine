@@ -15,7 +15,7 @@ class Strategy {
 public:
     Strategy(uint64_t field_width, uint64_t field_height, const std::map<ShipType, uint64_t>& ship_types);
 
-    virtual FieldPoint GetNextShot() const = 0;
+    virtual FieldPoint GetNextShot() = 0;
     FieldPoint MakeNextShot();
 
     uint64_t GetFieldWidth() const;
@@ -34,8 +34,6 @@ protected:
     uint64_t field_width_;
     uint64_t field_height_;
     std::map<ShipType, uint64_t> enemy_ships_count_;
-
-    std::unordered_set<FieldPoint, FieldPointHash> hit_points_;
 
     bool is_game_started_ = false;
 
