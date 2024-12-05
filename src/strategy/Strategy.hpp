@@ -28,7 +28,7 @@ public:
     ShotResult GetLastShotResult() const;
     FieldPoint GetLastShotPoint() const;
 
-    bool PlaceShips();
+    bool EnemyHasShips() const;
 
 protected:
     uint64_t field_width_;

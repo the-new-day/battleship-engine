@@ -49,6 +49,16 @@ FieldPoint Strategy::GetLastShotPoint() const {
     return last_shot_point_;
 }
 
+bool Strategy::EnemyHasShips() const {
+    for (auto [ship_type, amount] : enemy_ships_count_) {
+        if (amount > 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 uint64_t Strategy::GetFieldWidth() const {
     return field_width_;
 }

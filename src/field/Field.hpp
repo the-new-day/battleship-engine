@@ -29,7 +29,6 @@ struct FieldPointHash {
 class Field {
 public:
     Field(uint64_t width, uint64_t height) : width_(width), height_(height) {};
-    Field() = default;
 
     virtual void SetShip(uint64_t x, uint64_t y) = 0;
     virtual void RemoveShip(uint64_t x, uint64_t y) = 0;

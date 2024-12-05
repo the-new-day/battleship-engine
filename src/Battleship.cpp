@@ -22,6 +22,25 @@ Battleship::~Battleship() {
     RefreshGame();
 }
 
+bool Battleship::LoadFrom(const std::string& path) {
+    if (is_game_running_) {
+        return false;
+    }
+
+    RefreshGame();
+    game_mode_ = GameMode::kSlave;
+    ship_handler_ = new ShipHandler();
+
+    if (ship_handler_->LoadFromFile(path)) {
+        return false;
+    }
+
+    field_width_ = ship_handler_->GetFieldWidth();
+    field_height_ = ship_handler_->GetFieldHeight();
+
+    return true;
+}
+
 bool Battleship::IsPossibleToStart() const {
     return game_mode_.has_value() && status_ == BattleshipStatus::kConfigurationDone;
 }
@@ -51,11 +70,11 @@ void Battleship::HandleErrors() {
 }
 
 bool Battleship::IsLose() const {
-    return !ship_handler->HasAliveShips();
+    return ship_handler_ != nullptr && !ship_handler_->HasAliveShips();
 }
 
 bool Battleship::IsWin() const {
-    return !EnemyHasShips();
+    return strategy_ != nullptr && !strategy_->EnemyHasShips();
 }
 
 void Battleship::InitStrategy() {
@@ -81,10 +100,6 @@ void Battleship::ChangeStrategy() {
     strategy_->SetLastShotResult(last_shot_result_);
 }
 
-void Battleship::SetShipHandler() {
-    ship_handler = new ShipHandler(field_width_.value(), field_height_.value(), ships_count_);
-}
-
 void Battleship::DecreaseEnemyShipsAmount() {
     for (size_t i = 0; i < kShipTypesAmount; ++i) {
         if (enemy_ships_count_[i] > 0) {
@@ -92,16 +107,6 @@ void Battleship::DecreaseEnemyShipsAmount() {
             return;
         }
     }
-}
-
-bool Battleship::EnemyHasShips() const {
-    for (size_t i = 0; i < kShipTypesAmount; ++i) {
-        if (enemy_ships_count_[i] > 0) {
-            return true;
-        }
-    }
-
-    return false;
 }
 
 void Battleship::SetStrategy(StrategyType strategy_type) {
@@ -127,7 +132,7 @@ std::optional<ShotResult> Battleship::RecieveShot(uint64_t x, uint64_t y) {
         return std::nullopt;
     }
 
-    last_shot_result_ = ship_handler->ProcessShot(x, y);
+    last_shot_result_ = ship_handler_->ProcessShot(x, y);
     return last_shot_result_;
 }
 
@@ -144,7 +149,9 @@ void Battleship::SetLastShotResult(ShotResult result) {
 }
 
 bool Battleship::IsFinished() const {
-    return is_game_finished_ || !ship_handler->HasAliveShips() || !EnemyHasShips();
+    return is_game_finished_ 
+    || ship_handler_ != nullptr && !ship_handler_->HasAliveShips() 
+    || strategy_ != nullptr && !strategy_->EnemyHasShips();
 }
 
 bool Battleship::SetFieldHeight(uint64_t height) {
@@ -213,13 +220,7 @@ bool Battleship::Start() {
     InitStrategy();
     SetShipHandler();
 
-    // TODO: should be in Strategy
-    enemy_ships_count_[0] = ships_count_.at(ShipType::kOne);
-    enemy_ships_count_[1] = ships_count_.at(ShipType::kTwo);
-    enemy_ships_count_[2] = ships_count_.at(ShipType::kThree);
-    enemy_ships_count_[3] = ships_count_.at(ShipType::kFour);
-
-    if (!ship_handler->PlaceShips()) {
+    if (!ship_handler_->PlaceShips()) {
         status_ = BattleshipStatus::kWrongParameter;
         return false;
     }
@@ -270,7 +271,7 @@ uint64_t Battleship::GetShipsCount(ShipType type) const {
 void Battleship::RefreshGame() {
     delete ordered_strategy_;
     delete custom_strategy_;
-    delete ship_handler;
+    delete ship_handler_;
 }
 
 void Battleship::SetMasterConfig() {
@@ -278,6 +279,10 @@ void Battleship::SetMasterConfig() {
     field_height_ = kMasterModeFieldHeight;
     ships_count_ = kMasterModeShipsCount;
     HandleErrors();
+}
+
+void Battleship::SetShipHandler() {
+    ship_handler_ = new ShipHandler(field_width_.value(), field_height_.value(), ships_count_);
 }
 
 } // namespace Battleship

@@ -18,6 +18,8 @@ ConsoleApi::ConsoleApi(Battleship& game) : Api(game) {
         {"set", [this](std::string_view cmd) { return ParseSet(cmd); }},
         {"get", [this](std::string_view cmd) { return ParseGet(cmd); }},
         {"create", [this](std::string_view cmd) { return ParseCreate(cmd); }},
+        {"load", [this](std::string_view cmd) { return HandleLoad(cmd); }},
+        {"dump", [this](std::string_view cmd) { return HandleDump(cmd); }}
     };
 }
 
@@ -241,6 +243,14 @@ bool ConsoleApi::HandleStop(std::string_view cmd) {
     std::cout << "ok";
     is_game_running_ = false;
     return true;
+}
+
+bool ConsoleApi::HandleLoad(std::string_view cmd) {
+    return false;
+}
+
+bool ConsoleApi::HandleDump(std::string_view cmd) {
+    return false;
 }
 
 } // namespace Battleship

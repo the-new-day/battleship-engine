@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <map>
 #include <cstdint>
+#include <string>
 
 namespace Battleship {
 
@@ -27,6 +28,13 @@ const size_t kShipMaxLength = 4;
 class ShipHandler {
 public:
     ShipHandler(uint64_t field_width, uint64_t field_height, const std::map<ShipType, uint64_t>& ships_count);
+    ShipHandler() = default;
+
+    uint64_t GetFieldWidth() const;
+    uint64_t GetFieldHeight() const;
+
+    bool LoadFromFile(const std::string& filename);
+    bool Dump(const std::string& filename);
 
     ShotResult ProcessShot(uint64_t x, uint64_t y);
     bool HasAliveShips() const;
@@ -42,6 +50,10 @@ private:
 
     uint64_t ship_placement_seed;
 
+    // TODO: what if file gets deleted
+    bool was_loaded_from_file = false;
+    std::string filename;
+
     Field* field_;
 
     bool IsHitFatal(uint64_t x, uint64_t y, const std::vector<FieldPoint>& ship_cells) const;
@@ -55,6 +67,8 @@ private:
     uint8_t GetShipSize(ShipType type) const;
 
     bool PlaceShipsLinear();
+
+    void SetField();
 };
     
 } // namespace Battleship

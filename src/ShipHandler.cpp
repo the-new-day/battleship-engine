@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <random>
 #include <iostream>
+#include <fstream>
 
 namespace Battleship {
 
@@ -18,28 +19,55 @@ ShipHandler::ShipHandler(uint64_t field_width, uint64_t field_height, const std:
     : field_width_(field_width)
     , field_height_(field_height)
     , ships_count_(ships_count) {
-    if (static_cast<double>(field_width_) / kMaxMatrixFieldArea * field_height_ < 1) {
-        field_ = new MartixField(field_width_, field_height_);
-        return;
-    }
-
-    double density = (static_cast<double>(ships_count_.at(ShipType::kOne)) / field_width_)
-                   + (static_cast<double>(ships_count_.at(ShipType::kTwo)) / field_width_)
-                   + (static_cast<double>(ships_count_.at(ShipType::kThree)) / field_width_)
-                   + (static_cast<double>(ships_count_.at(ShipType::kFour)) / field_width_);
-
-    density /= field_height_;
-
-    if (density < 0.25) {
-        field_ = new MappedField(field_width_, field_height_);
-    } else if (density < 0.75) {
-        field_ = new CompressedField(field_width_, field_height_);
-    } else {
-        field_ = new CompressedDenseField(field_width_, field_height_);
-    }
+    SetField();
 }
 
-ShotResult ShipHandler::ProcessShot(uint64_t x, uint64_t y) {
+bool ShipHandler::LoadFromFile(const std::string& filename) {
+    std::ifstream file(filename);
+    
+    if (!file.good()) {
+        return false;
+    }
+
+    delete field_;
+
+    if (!(file >> field_width_ >> field_height_)) {
+        return false;
+    }
+
+    SetField();
+    ships_count_.clear();
+
+    uint8_t ship_size;
+    char direction;
+    uint64_t x;
+    uint64_t y;
+
+    while (file >> ship_size >> direction >> x >> y) {
+        ShipType ship_type = ShipType(ship_size);
+        bool is_horizontal;
+
+        if (direction == 'v') {
+            is_horizontal = false;
+        } else if (direction == 'h') {
+            is_horizontal = true;
+        } else {
+            return false;
+        }
+
+        if (!IsPossibleToPlaceShip(x, y, ship_type, is_horizontal)) {
+            return false;
+        }
+        
+        PlaceShip(x, y, ship_type, is_horizontal);
+        ++ships_count_[ship_type];
+    }
+
+    return true;
+}
+
+ShotResult ShipHandler::ProcessShot(uint64_t x, uint64_t y)
+{
     if (!field_->HasShip(x, y)) {
         return ShotResult::kMiss;
     }
@@ -181,6 +209,28 @@ bool ShipHandler::PlaceShipsLinear() {
     return true;
 }
 
+void ShipHandler::SetField() {
+    if (static_cast<double>(field_width_) / kMaxMatrixFieldArea * field_height_ < 1) {
+        field_ = new MartixField(field_width_, field_height_);
+        return;
+    }
+
+    double density = (static_cast<double>(ships_count_.at(ShipType::kOne)) / field_width_)
+                   + (static_cast<double>(ships_count_.at(ShipType::kTwo)) / field_width_)
+                   + (static_cast<double>(ships_count_.at(ShipType::kThree)) / field_width_)
+                   + (static_cast<double>(ships_count_.at(ShipType::kFour)) / field_width_);
+
+    density /= field_height_;
+
+    if (density < 0.25) {
+        field_ = new MappedField(field_width_, field_height_);
+    } else if (density < 0.75) {
+        field_ = new CompressedField(field_width_, field_height_);
+    } else {
+        field_ = new CompressedDenseField(field_width_, field_height_);
+    }
+}
+
 void ShipHandler::PlaceShip(uint64_t x, uint64_t y, ShipType type, bool is_horizontal) {
     uint8_t ship_size = GetShipSize(type);
 
@@ -231,6 +281,14 @@ bool ShipHandler::HasAliveShips() const {
     }
 
     return false;
+}
+
+uint64_t ShipHandler::GetFieldWidth() const {
+    return field_width_;
+}
+
+uint64_t ShipHandler::GetFieldHeight() const {
+    return field_height_;
 }
 
 } // namespace Battleship

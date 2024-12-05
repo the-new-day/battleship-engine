@@ -85,7 +85,7 @@ private:
     bool is_game_running_ = false;
     bool is_game_finished_ = false;
 
-    ShipHandler* ship_handler = nullptr;
+    ShipHandler* ship_handler_ = nullptr;
 
     std::optional<GameMode> game_mode_;
 
@@ -116,7 +116,6 @@ private:
     void SetShipHandler();
     
     void DecreaseEnemyShipsAmount();
-    bool EnemyHasShips() const;
 
     void RefreshGame();
 

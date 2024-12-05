@@ -25,6 +25,9 @@ private:
     bool HandleStart(std::string_view cmd);
     bool HandleStop(std::string_view cmd);
 
+    bool HandleLoad(std::string_view cmd);
+    bool HandleDump(std::string_view cmd);
+
     std::map<std::string_view, std::function<bool(std::string_view)>> commands;
 };
     
