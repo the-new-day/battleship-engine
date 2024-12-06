@@ -157,7 +157,6 @@ void ParityStrategy::UpdateSafeZone() {
              y <= (target_cells_.back().y == field_height_ - 1 ? field_height_ - 1 : target_cells_.back().y + 1);
              ++y) {
             enemy_field_->SetBit(x, y);
-            std::cout << "(" << x << ", " << y << ") ";
         }
     }
 }
