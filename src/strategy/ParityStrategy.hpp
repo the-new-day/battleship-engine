@@ -15,6 +15,7 @@ public:
 
 private:
     FieldPoint last_strategic_shot_;
+    FieldPoint last_successful_hunt_shot_;
 
     std::vector<FieldPoint> target_cells_;
     std::vector<FieldPoint> potential_targets_;
@@ -24,7 +25,9 @@ private:
     void MakeNextStrategicShot();
     void MakeNextHuntingShot();
 
-    FieldPoint ChooseNextStrategicShot() const;
+    void UpdateSafeZone();
+
+    FieldPoint ChooseNextStrategicShot(FieldPoint last_shot) const;
 };
 
 } // namespace Battleship

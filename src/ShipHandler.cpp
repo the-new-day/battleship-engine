@@ -135,7 +135,7 @@ ShotResult ShipHandler::ProcessShot(uint64_t x, uint64_t y) {
     ShotResult result = ShotResult::kHit;
 
     std::vector<FieldPoint> ship_cells;
-    ship_cells.reserve(kShipMaxLength);
+    ship_cells.reserve(kMaxShipLength);
 
     FindShipCells(x, y, ship_cells);
     
@@ -186,44 +186,7 @@ void ShipHandler::FindShipCells(uint64_t x, uint64_t y, std::vector<FieldPoint>&
 }
 
 bool ShipHandler::PlaceShips() {
-    std::random_device rd;
-    
-    std::mt19937 mt(rd());
-    std::uniform_int_distribution<> dist_x(0, field_width_ - 1);
-    std::uniform_int_distribution<> dist_y(0, field_height_ - 1);
-    std::uniform_int_distribution<> dist_orientation(0, 1);
-
-    for (uint8_t ship_size = kShipMaxLength; ship_size > 0; --ship_size) {
-        uint64_t amount = ships_count_[ship_size];
-
-        while (amount > 0) {
-            uint64_t x;
-            uint64_t y;
-            bool is_horizontal;
-
-            bool is_placed = false;
-
-            for (uint64_t attempt = 0; 
-            !is_placed && static_cast<double>(attempt) / field_width_ < field_height_;
-            ++attempt) {
-                x = dist_x(mt);
-                y = dist_y(mt);
-                is_horizontal = (dist_orientation(mt) == 0);
-
-                if (IsPossibleToPlaceShip(x, y, ship_size, is_horizontal)) {
-                    PlaceShip(x, y, ship_size, is_horizontal);
-                    is_placed = true;
-                }
-            }
-
-            if (!is_placed) {
-                field_->Clear();
-                return PlaceShipsLinear();
-            }
-
-            --amount;
-        }
-    }
+    bool result = PlaceShipsRandomly() || PlaceShipsLinear();
 
     for (uint64_t y = 0; y < field_height_; ++y) {
         for (uint64_t x = 0; x < field_width_; ++x) {
@@ -233,13 +196,13 @@ bool ShipHandler::PlaceShips() {
         std::cout << '\n';
     }
 
-    return true;
+    return result;
 }
 
 bool ShipHandler::PlaceShipsLinear() {
     bool is_horizontal = false;
 
-    for (uint8_t ship_size = kShipMaxLength; ship_size > 0; --ship_size) {
+    for (uint8_t ship_size = kMaxShipLength; ship_size > 0; --ship_size) {
         uint64_t amount = ships_count_[ship_size];
 
         while (amount > 0) {
@@ -266,6 +229,48 @@ bool ShipHandler::PlaceShipsLinear() {
     return true;
 }
 
+bool ShipHandler::PlaceShipsRandomly() {
+    std::random_device rd;
+    
+    std::mt19937 mt(rd());
+    std::uniform_int_distribution<> dist_x(0, field_width_ - 1);
+    std::uniform_int_distribution<> dist_y(0, field_height_ - 1);
+    std::uniform_int_distribution<> dist_orientation(0, 1);
+
+    for (uint8_t ship_size = kMaxShipLength; ship_size > 0; --ship_size) {
+        uint64_t amount = ships_count_[ship_size];
+
+        while (amount > 0) {
+            uint64_t x;
+            uint64_t y;
+            bool is_horizontal;
+
+            bool is_placed = false;
+
+            for (uint64_t attempt = 0; 
+            !is_placed && static_cast<double>(attempt) / field_width_ < field_height_;
+            ++attempt) {
+                x = dist_x(mt);
+                y = dist_y(mt);
+                is_horizontal = (dist_orientation(mt) == 0);
+
+                if (IsPossibleToPlaceShip(x, y, ship_size, is_horizontal)) {
+                    PlaceShip(x, y, ship_size, is_horizontal);
+                    is_placed = true;
+                }
+            }
+
+            if (!is_placed) {
+                return false;
+            }
+
+            --amount;
+        }
+    }
+
+    return true;
+}
+
 void ShipHandler::SetField() {
     if (static_cast<double>(field_width_) / kMaxMatrixFieldArea * field_height_ < 1) {
         field_ = new MartixField(field_width_, field_height_);
@@ -274,7 +279,7 @@ void ShipHandler::SetField() {
 
     double density = 0;
 
-    for (uint8_t i = 1; i <= kShipMaxLength; ++i) {
+    for (uint8_t i = 1; i <= kMaxShipLength; ++i) {
         density += static_cast<double>(ships_count_[i]) / field_width_;
     }
 

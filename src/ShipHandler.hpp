@@ -17,7 +17,7 @@ enum class ShotResult {
 };
 
 const size_t kShipTypesAmount = 4;
-const size_t kShipMaxLength = 4;
+const size_t kMaxShipLength = 4;
 
 class ShipHandler {
 public:
@@ -34,6 +34,8 @@ public:
     bool HasAliveShips() const;
 
     bool PlaceShips();
+    bool PlaceShipsLinear();
+    bool PlaceShipsRandomly();
 
     uint64_t GetShipsCount(uint8_t ship_size) const;
 
@@ -53,8 +55,6 @@ private:
 
     void PlaceShip(uint64_t x, uint64_t y, uint8_t ship_size, bool is_horizontal);
     bool IsPossibleToPlaceShip(uint64_t x, uint64_t y, uint8_t ship_size, bool is_horizontal) const;
-
-    bool PlaceShipsLinear();
 
     void SetField();
 

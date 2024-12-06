@@ -14,7 +14,7 @@ const uint64_t kMaxMatrixFieldArea = 251'658'240;
 const uint64_t kMaxProbabilityStrategySize = 1'000'000;
 
 Battleship::Battleship() {
-    for (uint8_t i = 1; i <= kShipMaxLength; ++i) {
+    for (uint8_t i = 1; i <= kMaxShipLength; ++i) {
         ships_count_[i] = 0;
     }
 }
@@ -75,7 +75,7 @@ void Battleship::HandleErrors() {
 
     bool have_ship = false;
 
-    for (uint8_t i = 1; i <= kShipMaxLength; ++i) {
+    for (uint8_t i = 1; i <= kMaxShipLength; ++i) {
         if (ships_count_[i] > 0) {
             have_ship = true;
         }
@@ -267,7 +267,11 @@ bool Battleship::SetShipsCount(uint8_t ship_size, uint64_t amount) {
 }
 
 uint64_t Battleship::GetShipsCount(uint8_t ship_size) const {
-    return ship_handler_ == nullptr ? 0 : ship_handler_->GetShipsCount(ship_size);
+    if (ship_size == 0 || ship_size > kMaxShipLength) {
+        return 0;
+    }
+
+    return ships_count_.at(ship_size);
 }
 
 void Battleship::RefreshGame() {

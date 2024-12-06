@@ -70,10 +70,9 @@ bool ConsoleApi::ParseSet(std::string_view cmd) {
         }
     } else if (parameter == "count") {
         std::string_view ship_type_str = value_str.substr(0, value_str.find(' '));
-
         auto ship_size = ParseNumber<uint8_t>(ship_type_str);
 
-        if (!ship_size.has_value()) {
+        if (!ship_size.has_value() || ship_size == 0 || ship_size > kMaxShipLength) {
             return false;
         }
         
@@ -157,10 +156,9 @@ bool ConsoleApi::ParseGet(std::string_view cmd) {
         std::cout << height.value();
     } else if (parameter == "count") {
         std::string_view value_str = cmd.substr(parameter.length() + 1);
-
         auto ship_size = ParseNumber<uint8_t>(value_str);
 
-        if (!ship_size.has_value()) {
+        if (!ship_size.has_value() || ship_size == 0 || ship_size > kMaxShipLength) {
             return false;
         }
 
