@@ -69,25 +69,18 @@ bool ConsoleApi::ParseSet(std::string_view cmd) {
             return false;
         }
     } else if (parameter == "count") {
-        ShipType ship_type;
         std::string_view ship_type_str = value_str.substr(0, value_str.find(' '));
 
-        if (ship_type_str == "1") {
-            ship_type = ShipType::kOne;
-        } else if (ship_type_str == "2") {
-            ship_type = ShipType::kTwo;
-        } else if (ship_type_str == "3") {
-            ship_type = ShipType::kThree;
-        } else if (ship_type_str == "4") {
-            ship_type = ShipType::kFour;
-        } else {
+        auto ship_size = ParseNumber<uint8_t>(ship_type_str);
+
+        if (!ship_size.has_value()) {
             return false;
         }
         
         value_str = value_str.substr(value_str.find(' ') + 1);
         std::optional<uint64_t> amount = ParseNumber<uint64_t>(value_str);
         
-        if (!amount.has_value() || !game_.SetShipsCount(ship_type, amount.value())) {
+        if (!amount.has_value() || !game_.SetShipsCount(ship_size.value(), amount.value())) {
             return false;
         }
     } else if (parameter == "strategy") {
@@ -163,22 +156,15 @@ bool ConsoleApi::ParseGet(std::string_view cmd) {
 
         std::cout << height.value();
     } else if (parameter == "count") {
-        ShipType ship_type;
         std::string_view value_str = cmd.substr(parameter.length() + 1);
 
-        if (value_str == "1") {
-            ship_type = ShipType::kOne;
-        } else if (value_str == "2") {
-            ship_type = ShipType::kTwo;
-        } else if (value_str == "3") {
-            ship_type = ShipType::kThree;
-        } else if (value_str == "4") {
-            ship_type = ShipType::kFour;
-        } else {
+        auto ship_size = ParseNumber<uint8_t>(value_str);
+
+        if (!ship_size.has_value()) {
             return false;
         }
 
-        std::cout << game_.GetShipsCount(ship_type);
+        std::cout << game_.GetShipsCount(ship_size.value());
     } else {
         return false;
     }

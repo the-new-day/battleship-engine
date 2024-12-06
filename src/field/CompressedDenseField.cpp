@@ -12,7 +12,7 @@ CompressedDenseField::CompressedDenseField(uint64_t width, uint64_t height) : Fi
     Clear();
 }
 
-void CompressedDenseField::SetShip(uint64_t x, uint64_t y) {
+void CompressedDenseField::SetBit(uint64_t x, uint64_t y) {
     if (!IsInBounds(x, y)) {
         return;
     }
@@ -20,11 +20,11 @@ void CompressedDenseField::SetShip(uint64_t x, uint64_t y) {
     rows_[y].SetBitAt(x, 0, 1);
 }
 
-bool CompressedDenseField::HasShip(uint64_t x, uint64_t y) const {
+bool CompressedDenseField::IsOneAt(uint64_t x, uint64_t y) const {
     return IsInBounds(x, y) && rows_[y].IsOneAt(x, 0);
 }
 
-void CompressedDenseField::RemoveShip(uint64_t x, uint64_t y) {
+void CompressedDenseField::RemoveBit(uint64_t x, uint64_t y) {
     if (!IsInBounds(x, y)) {
         return;
     }

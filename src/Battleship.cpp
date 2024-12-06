@@ -14,10 +14,9 @@ const uint64_t kMaxMatrixFieldArea = 251'658'240;
 const uint64_t kMaxProbabilityStrategySize = 1'000'000;
 
 Battleship::Battleship() {
-    ships_count_[ShipType::kOne] = 0;
-    ships_count_[ShipType::kTwo] = 0;
-    ships_count_[ShipType::kThree] = 0;
-    ships_count_[ShipType::kFour] = 0;
+    for (uint8_t i = 1; i <= kShipMaxLength; ++i) {
+        ships_count_[i] = 0;
+    }
 }
 
 Battleship::~Battleship() {
@@ -69,11 +68,20 @@ BattleshipStatus Battleship::GetStatus() const {
 void Battleship::HandleErrors() {
     if (!game_mode_.has_value() 
     || !field_width_.has_value() 
-    || !field_height_.has_value() 
-    || (ships_count_.at(ShipType::kOne) == 0
-    && ships_count_.at(ShipType::kTwo) == 0
-    && ships_count_.at(ShipType::kThree) == 0
-    && ships_count_.at(ShipType::kFour) == 0)) {
+    || !field_height_.has_value()) {
+        status_ = BattleshipStatus::kConfigurationNotSet;
+        return;
+    }
+
+    bool have_ship = false;
+
+    for (uint8_t i = 1; i <= kShipMaxLength; ++i) {
+        if (ships_count_[i] > 0) {
+            have_ship = true;
+        }
+    }
+
+    if (!have_ship) {
         status_ = BattleshipStatus::kConfigurationNotSet;
         return;
     }
@@ -105,10 +113,10 @@ void Battleship::ChangeStrategy() {
     } else if (strategy_type_ == StrategyType::kProbability) {
         strategy_ = probability_strategy_;
     } else {
-        if (static_cast<double>(field_width_.value()) / kMaxProbabilityStrategySize * field_height_.value() < 1) {
-            strategy_ = probability_strategy_;
-            return;
-        }
+        // if (static_cast<double>(field_width_.value()) / kMaxProbabilityStrategySize * field_height_.value() < 1) {
+        //     strategy_ = probability_strategy_;
+        //     return;
+        // }
 
         strategy_ = parity_strategy_;
     }
@@ -247,18 +255,18 @@ std::optional<uint64_t> Battleship::GetHeight() const {
     return field_height_;
 }
 
-bool Battleship::SetShipsCount(ShipType type, uint64_t amount) {
+bool Battleship::SetShipsCount(uint8_t ship_size, uint64_t amount) {
     if (is_game_running_ || (game_mode_.has_value() && game_mode_.value() == GameMode::kMaster)) {
         return false;
     }
 
-    ships_count_[type] = amount;
+    ships_count_[ship_size] = amount;
     HandleErrors();
     return true;
 }
 
-uint64_t Battleship::GetShipsCount(ShipType type) const {
-    return ship_handler_ == nullptr ? 0 : ship_handler_->GetShipsCount(type);
+uint64_t Battleship::GetShipsCount(uint8_t ship_size) const {
+    return ship_handler_ == nullptr ? 0 : ship_handler_->GetShipsCount(ship_size);
 }
 
 void Battleship::RefreshGame() {

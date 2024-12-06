@@ -11,7 +11,7 @@ MartixField::MartixField(uint64_t width, uint64_t height) : Field(width, height)
     }
 }
 
-void MartixField::SetShip(uint64_t x, uint64_t y) {
+void MartixField::SetBit(uint64_t x, uint64_t y) {
     if (!IsInBounds(x, y)) {
         return;
     }
@@ -19,7 +19,7 @@ void MartixField::SetShip(uint64_t x, uint64_t y) {
     matrix_[y][x] = true;
 }
 
-bool MartixField::HasShip(uint64_t x, uint64_t y) const {
+bool MartixField::IsOneAt(uint64_t x, uint64_t y) const {
     if (!IsInBounds(x, y)) {
         return false;
     }
@@ -27,7 +27,7 @@ bool MartixField::HasShip(uint64_t x, uint64_t y) const {
     return matrix_[y][x];
 }
 
-void MartixField::RemoveShip(uint64_t x, uint64_t y) {
+void MartixField::RemoveBit(uint64_t x, uint64_t y) {
     if (!IsInBounds(x, y)) {
         return;
     }

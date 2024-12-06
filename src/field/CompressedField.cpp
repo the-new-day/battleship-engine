@@ -2,7 +2,7 @@
 
 namespace Battleship {
 
-void CompressedField::SetShip(uint64_t x, uint64_t y) {
+void CompressedField::SetBit(uint64_t x, uint64_t y) {
     if (!IsInBounds(x, y)) {
         return;
     }
@@ -10,11 +10,23 @@ void CompressedField::SetShip(uint64_t x, uint64_t y) {
     SetBit(x, y, 1);
 }
 
-bool CompressedField::HasShip(uint64_t x, uint64_t y) const {
-    return IsInBounds(x, y) && IsOneAt(x, y);
+bool CompressedField::IsOneAt(uint64_t x, uint64_t y) const {
+    if (!IsInBounds(x, y)) {
+        return false;
+    }
+    
+    FieldPoint block_index = GetBlockIndex(x, y);
+    if (!blocks_.contains(block_index)) {
+        return false;
+    }
+
+    x %= kRleBlockSize;
+    y %= kRleBlockSize;
+
+    return blocks_.at(block_index).IsOneAt(x, y);
 }
 
-void CompressedField::RemoveShip(uint64_t x, uint64_t y) {
+void CompressedField::RemoveBit(uint64_t x, uint64_t y) {
     if (!IsInBounds(x, y)) {
         return;
     }
@@ -57,18 +69,6 @@ void CompressedField::AddBlock(uint64_t x, uint64_t y) {
     }
 
     blocks_.emplace(block_index, RleBlock(kRleBlockSize, kRleBlockSize));
-}
-
-bool CompressedField::IsOneAt(uint64_t x, uint64_t y) const {
-    FieldPoint block_index = GetBlockIndex(x, y);
-    if (!blocks_.contains(block_index)) {
-        return false;
-    }
-
-    x %= kRleBlockSize;
-    y %= kRleBlockSize;
-
-    return blocks_.at(block_index).IsOneAt(x, y);
 }
 
 } // namespace Battleship

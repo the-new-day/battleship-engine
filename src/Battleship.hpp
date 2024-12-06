@@ -37,11 +37,11 @@ enum class BattleshipStatus {
 const uint64_t kMasterModeFieldWidth = 10;
 const uint64_t kMasterModeFieldHeight = 10;
 
-const std::map<ShipType, uint64_t> kMasterModeShipsCount = {
-    {ShipType::kOne, 4},
-    {ShipType::kTwo, 3},
-    {ShipType::kThree, 2},
-    {ShipType::kFour, 1}
+const std::map<uint8_t, uint64_t> kMasterModeShipsCount = {
+    {1, 4},
+    {2, 3},
+    {3, 2},
+    {3, 1}
 };
 
 class Battleship {
@@ -62,8 +62,8 @@ public:
     std::optional<uint64_t> GetWidth() const;
     std::optional<uint64_t> GetHeight() const;
 
-    bool SetShipsCount(ShipType type, uint64_t amount);
-    uint64_t GetShipsCount(ShipType type) const;
+    bool SetShipsCount(uint8_t ship_size, uint64_t amount);
+    uint64_t GetShipsCount(uint8_t ship_size) const;
 
     void SetStrategy(StrategyType strategy_type);
 
@@ -92,7 +92,7 @@ private:
 
     std::optional<GameMode> game_mode_;
 
-    std::map<ShipType, uint64_t> ships_count_;
+    std::map<uint8_t, uint64_t> ships_count_;
 
     StrategyType strategy_type_ = StrategyType::kCustom;
 

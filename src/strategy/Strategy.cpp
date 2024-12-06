@@ -10,7 +10,7 @@ namespace Battleship {
 
 Strategy::Strategy(uint64_t field_width, 
                    uint64_t field_height,
-                   const std::map<ShipType, uint64_t>& ship_types)
+                   const std::map<uint8_t, uint64_t>& ship_types)
                    : enemy_ships_count_(ship_types)
                    , field_width_(field_width)
                    , field_height_(field_height)
@@ -33,10 +33,6 @@ void Strategy::SetLastShotCoords(uint64_t x, uint64_t y) {
     last_shot_point_.y = y;
 }
 
-void Strategy::SetLastShotCoords(FieldPoint point) {
-    last_shot_point_ = point;
-}
-
 void Strategy::SetLastShotResult(ShotResult result) {
     last_shot_result_ = result;
 }
@@ -50,7 +46,7 @@ FieldPoint Strategy::GetLastShotPoint() const {
 }
 
 bool Strategy::EnemyHasShips() const {
-    for (auto [ship_type, amount] : enemy_ships_count_) {
+    for (const auto& [ship_size, amount] : enemy_ships_count_) {
         if (amount > 0) {
             return true;
         }

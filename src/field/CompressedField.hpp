@@ -12,10 +12,10 @@ class CompressedField : public Field {
 public:
     CompressedField(uint64_t width, uint64_t height) : Field(width, height) {};
 
-    void SetShip(uint64_t x, uint64_t y) override;
-    bool HasShip(uint64_t x, uint64_t y) const override;
+    void SetBit(uint64_t x, uint64_t y) override;
+    bool IsOneAt(uint64_t x, uint64_t y) const override;
 
-    void RemoveShip(uint64_t x, uint64_t y) override;
+    void RemoveBit(uint64_t x, uint64_t y) override;
 
     void Clear() override;
 
@@ -37,7 +37,6 @@ private:
     FieldPoint GetBlockIndex(uint64_t x, uint64_t y) const;
     void SetBit(uint64_t x, uint64_t y, bool to_one);
     void AddBlock(uint64_t x, uint64_t y);
-    bool IsOneAt(uint64_t x, uint64_t y) const;
 };
     
 } // namespace Battleship
