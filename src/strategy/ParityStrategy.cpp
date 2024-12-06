@@ -147,7 +147,7 @@ void ParityStrategy::UpdateSafeZone() {
         target_cells_.begin(), 
         target_cells_.end(),
         [is_horizontal](const FieldPoint& p1, const FieldPoint& p2) { 
-            return is_horizontal && p1.x < p2.x || !is_horizontal && p2.y < p2.y;
+            return is_horizontal && p1.x < p2.x || !is_horizontal && p1.y < p2.y;
         });
 
     for (uint64_t x = (target_cells_[0].x == 0 ? 0 : target_cells_[0].x - 1); 
@@ -157,7 +157,7 @@ void ParityStrategy::UpdateSafeZone() {
              y <= (target_cells_.back().y == field_height_ - 1 ? field_height_ - 1 : target_cells_.back().y + 1);
              ++y) {
             enemy_field_->SetBit(x, y);
-            std::cout << "( " << x << ", " << y << ") ";
+            std::cout << "(" << x << ", " << y << ") ";
         }
     }
 }
