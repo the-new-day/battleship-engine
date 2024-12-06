@@ -7,8 +7,11 @@ namespace Battleship {
 
 class OrderedStrategy : public Strategy {
 public:
-    OrderedStrategy(uint64_t field_width, uint64_t field_height, const std::map<uint8_t, uint64_t>& ship_types) 
-                    : Strategy(field_width, field_height, ship_types) {};
+    OrderedStrategy(uint64_t field_width,
+                    uint64_t field_height, 
+                    const std::map<uint8_t, uint64_t>& ship_types,
+                    Field* enemy_field) 
+                    : Strategy(field_width, field_height, ship_types, enemy_field) {};
              
     FieldPoint GetNextShot() override;
 

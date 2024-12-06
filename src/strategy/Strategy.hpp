@@ -13,7 +13,10 @@ namespace Battleship {
 
 class Strategy {
 public:
-    Strategy(uint64_t field_width, uint64_t field_height, const std::map<uint8_t, uint64_t>& ship_types);
+    Strategy(uint64_t field_width,
+             uint64_t field_height,
+             const std::map<uint8_t, uint64_t>& ship_types,
+             Field* enemy_field);
 
     virtual FieldPoint GetNextShot() = 0;
     FieldPoint MakeNextShot();
@@ -36,7 +39,7 @@ protected:
 
     bool is_game_started_ = false;
 
-    CompressedField enemy_field_;
+    Field* enemy_field_;
 
     ShotResult last_shot_result_;
     FieldPoint last_shot_point_;

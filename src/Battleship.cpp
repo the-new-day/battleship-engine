@@ -98,9 +98,9 @@ bool Battleship::IsWin() const {
 }
 
 void Battleship::InitStrategy() {
-    ordered_strategy_ = new OrderedStrategy(field_width_.value(), field_height_.value(), ships_count_);
-    parity_strategy_ = new ParityStrategy(field_width_.value(), field_height_.value(), ships_count_);
-    probability_strategy_ = new ProbabilityStrategy(field_width_.value(), field_height_.value(), ships_count_);
+    ordered_strategy_ = new OrderedStrategy(field_width_.value(), field_height_.value(), ships_count_, enemy_field_);
+    parity_strategy_ = new ParityStrategy(field_width_.value(), field_height_.value(), ships_count_, enemy_field_);
+    probability_strategy_ = new ProbabilityStrategy(field_width_.value(), field_height_.value(), ships_count_, enemy_field_);
 
     ChangeStrategy();
 }
@@ -222,6 +222,7 @@ bool Battleship::Start() {
     }
     
     RefreshGame();
+    SetEnemyField();
     InitStrategy();
     SetShipHandler();
 
@@ -274,11 +275,13 @@ void Battleship::RefreshGame() {
     delete parity_strategy_;
     delete probability_strategy_;
     delete ship_handler_;
+    delete enemy_field_;
 
     ordered_strategy_ = nullptr;
     probability_strategy_ = nullptr;
     parity_strategy_ = nullptr;
     ship_handler_ = nullptr;
+    enemy_field_ = nullptr;
 }
 
 void Battleship::SetMasterConfig() {
@@ -290,6 +293,10 @@ void Battleship::SetMasterConfig() {
 
 void Battleship::SetShipHandler() {
     ship_handler_ = new ShipHandler(field_width_.value(), field_height_.value(), ships_count_);
+}
+
+void Battleship::SetEnemyField() {
+    enemy_field_ = new CompressedField(field_width_.value(), field_height_.value());
 }
 
 } // namespace Battleship

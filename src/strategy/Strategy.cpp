@@ -10,11 +10,12 @@ namespace Battleship {
 
 Strategy::Strategy(uint64_t field_width, 
                    uint64_t field_height,
-                   const std::map<uint8_t, uint64_t>& ship_types)
+                   const std::map<uint8_t, uint64_t>& ship_types,
+                   Field* enemy_field)
                    : enemy_ships_count_(ship_types)
                    , field_width_(field_width)
                    , field_height_(field_height)
-                   , enemy_field_(CompressedField(field_width, field_height)) {
+                   , enemy_field_(enemy_field) {
 }
 
 FieldPoint Strategy::MakeNextShot() {

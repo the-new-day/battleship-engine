@@ -7,8 +7,9 @@ namespace Battleship {
 ParityStrategy::ParityStrategy(
     uint64_t field_width, 
     uint64_t field_height, 
-    const std::map<uint8_t, uint64_t>& ship_types)
-    : Strategy(field_width, field_height, ship_types) {
+    const std::map<uint8_t, uint64_t>& ship_types,
+    Field* enemy_field)
+    : Strategy(field_width, field_height, ship_types, enemy_field) {
     current_target_cells_.reserve(kShipMaxLength);
 }
 
@@ -35,7 +36,7 @@ FieldPoint Battleship::ParityStrategy::GetNextShot() {
 void ParityStrategy::MakeNextStrategicShot() {
     FieldPoint next_shot = last_strategic_shot_;
 
-    while (enemy_field_.IsOneAt(last_strategic_shot_.x, last_strategic_shot_.y)) {
+    while (enemy_field_->IsOneAt(last_strategic_shot_.x, last_strategic_shot_.y)) {
         next_shot.x = (last_strategic_shot_.x + 2) % field_width_;
 
         if (last_strategic_shot_.x + 2 > field_width_) {
@@ -59,17 +60,17 @@ void ParityStrategy::MakeNextHuntingShot() {
     if (current_target_cells_.size() == 1) {
         const FieldPoint& cell = current_target_cells_[0];
 
-        if (enemy_field_.IsOneAt(cell.x - 1, cell.y) && enemy_field_.IsOneAt(cell.x + 1, cell.y)) {
+        if (enemy_field_->IsOneAt(cell.x - 1, cell.y) && enemy_field_->IsOneAt(cell.x + 1, cell.y)) {
             last_shot_point_ = {cell.x, cell.y + (cell.y == 0 ? 1 : -1)};
-        } else if (enemy_field_.IsOneAt(cell.x, cell.y + 1) && enemy_field_.IsOneAt(cell.x, cell.y - 1)) {
+        } else if (enemy_field_->IsOneAt(cell.x, cell.y + 1) && enemy_field_->IsOneAt(cell.x, cell.y - 1)) {
             last_shot_point_ = {cell.x + (cell.x == 0 ? 1 : -1), cell.y};
-        } else if (enemy_field_.IsOneAt(cell.x - 1, cell.y)) {
+        } else if (enemy_field_->IsOneAt(cell.x - 1, cell.y)) {
             last_shot_point_ = {cell.x + 1, cell.y};
-        } else if (enemy_field_.IsOneAt(cell.x + 1, cell.y)) {
+        } else if (enemy_field_->IsOneAt(cell.x + 1, cell.y)) {
             last_shot_point_ = {cell.x - 1, cell.y};
-        } else if (enemy_field_.IsOneAt(cell.x, cell.y - 1)) {
+        } else if (enemy_field_->IsOneAt(cell.x, cell.y - 1)) {
             last_shot_point_ = {cell.x, cell.y + 1};
-        } else if (enemy_field_.IsOneAt(cell.x, cell.y + 1)) {
+        } else if (enemy_field_->IsOneAt(cell.x, cell.y + 1)) {
             last_shot_point_ = {cell.x, cell.y - 1};
         } else {
             last_shot_point_ = {cell.x + (cell.x == 0 ? 1 : -1), cell.y + (cell.y == 0 ? 1 : -1)};
@@ -95,7 +96,7 @@ void ParityStrategy::MakeNextHuntingShot() {
             current_target_cells_.end(), 
             cmp);
 
-        if (enemy_field_.IsOneAt(leftmost_cell.x - 1, leftmost_cell.y)) {
+        if (enemy_field_->IsOneAt(leftmost_cell.x - 1, leftmost_cell.y)) {
             ++rightmost_cell.x;
             last_shot_point_ = rightmost_cell;
         } else {
@@ -121,7 +122,7 @@ void ParityStrategy::MakeNextHuntingShot() {
         current_target_cells_.end(), 
         cmp);
 
-    if (enemy_field_.IsOneAt(top_cell.x, top_cell.y + 1)) {
+    if (enemy_field_->IsOneAt(top_cell.x, top_cell.y + 1)) {
         --bottom_cell.y;
         last_shot_point_ = bottom_cell;
     } else {
@@ -137,7 +138,7 @@ void ParityStrategy::UpdateEnemyShips() {
             is_new_target_ = false;
         }
 
-        enemy_field_.SetBit(last_shot_point_.x, last_shot_point_.y);
+        enemy_field_->SetBit(last_shot_point_.x, last_shot_point_.y);
         current_target_cells_.emplace_back(last_shot_point_.x, last_shot_point_.y);
     } else if (last_shot_result_ == ShotResult::kKill) {
         is_new_target_ = true;
@@ -145,7 +146,7 @@ void ParityStrategy::UpdateEnemyShips() {
         failed_target_shot_ = std::nullopt;
 
         if (current_target_cells_.size() == 1) {
-            enemy_field_.SetBit(current_target_cells_[0].x, current_target_cells_[0].y);
+            enemy_field_->SetBit(current_target_cells_[0].x, current_target_cells_[0].y);
             --enemy_ships_count_[1];
             return;
         }
@@ -154,14 +155,14 @@ void ParityStrategy::UpdateEnemyShips() {
 
         for (size_t i = 0; i < current_target_cells_.size(); ++i) {
             const FieldPoint& cell = current_target_cells_[i];
-            enemy_field_.SetBit(cell.x, cell.y);
+            enemy_field_->SetBit(cell.x, cell.y);
 
             if (is_horizontal) {
-                enemy_field_.SetBit(cell.x, cell.y + 1);
-                if (cell.y > 0) enemy_field_.SetBit(cell.x, cell.y - 1);
+                enemy_field_->SetBit(cell.x, cell.y + 1);
+                if (cell.y > 0) enemy_field_->SetBit(cell.x, cell.y - 1);
             } else {
-                enemy_field_.SetBit(cell.x + 1, cell.y);
-                if (cell.x > 0) enemy_field_.SetBit(cell.x - 1, cell.y);
+                enemy_field_->SetBit(cell.x + 1, cell.y);
+                if (cell.x > 0) enemy_field_->SetBit(cell.x - 1, cell.y);
             }
         }
 
