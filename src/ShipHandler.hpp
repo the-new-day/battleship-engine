@@ -44,8 +44,6 @@ private:
     std::map<uint8_t, uint64_t> ships_count_;
     std::unordered_set<FieldPoint, FieldPointHash> hit_points_;
 
-    uint64_t ship_placement_seed;
-
     Field* field_;
 
     bool IsHitFatal(uint64_t x, uint64_t y, const std::vector<FieldPoint>& ship_cells) const;

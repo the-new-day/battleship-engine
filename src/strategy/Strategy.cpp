@@ -36,6 +36,7 @@ void Strategy::SetLastShotCoords(uint64_t x, uint64_t y) {
 
 void Strategy::SetLastShotResult(ShotResult result) {
     last_shot_result_ = result;
+    enemy_field_->SetBit(last_shot_point_.x, last_shot_point_.y);
 }
 
 ShotResult Strategy::GetLastShotResult() const {

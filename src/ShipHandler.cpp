@@ -187,9 +187,8 @@ void ShipHandler::FindShipCells(uint64_t x, uint64_t y, std::vector<FieldPoint>&
 
 bool ShipHandler::PlaceShips() {
     std::random_device rd;
-    ship_placement_seed = rd();
     
-    std::mt19937 mt(ship_placement_seed);
+    std::mt19937 mt(rd());
     std::uniform_int_distribution<> dist_x(0, field_width_ - 1);
     std::uniform_int_distribution<> dist_y(0, field_height_ - 1);
     std::uniform_int_distribution<> dist_orientation(0, 1);

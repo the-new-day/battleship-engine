@@ -16,22 +16,15 @@ public:
 private:
     FieldPoint last_strategic_shot_;
 
-    std::vector<FieldPoint> current_target_cells_;
-    bool is_new_target_ = true;
-    bool is_target_active_ = false;
-    std::optional<FieldPoint> failed_target_shot_;
-    bool is_second_failed_shot_ = false;
+    std::vector<FieldPoint> target_cells_;
+    std::vector<FieldPoint> potential_targets_;
 
     void StartGame() override;
 
     void MakeNextStrategicShot();
     void MakeNextHuntingShot();
 
-    uint8_t GetPointParity(FieldPoint point);
-
-    void UpdateEnemyShips();
-
-    bool WasVisitedInStrategy(FieldPoint point) const;
+    FieldPoint ChooseNextStrategicShot() const;
 };
 
 } // namespace Battleship
