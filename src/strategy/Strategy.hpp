@@ -21,14 +21,8 @@ public:
     virtual FieldPoint GetNextShot() = 0;
     FieldPoint MakeNextShot();
 
-    uint64_t GetFieldWidth() const;
-    uint64_t GetFieldHeight() const;
-
     void SetLastShotCoords(uint64_t x, uint64_t y);
     void SetLastShotResult(ShotResult result);
-
-    ShotResult GetLastShotResult() const;
-    FieldPoint GetLastShotPoint() const;
 
     bool EnemyHasShips() const;
 

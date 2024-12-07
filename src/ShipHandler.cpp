@@ -179,24 +179,14 @@ void ShipHandler::FindShipCells(uint64_t x, uint64_t y, std::vector<FieldPoint>&
 
     cells.emplace_back(x, y);
 
-    if (x < field_width_) FindShipCells(x + 1, y, cells);
-    if (y < field_height_) FindShipCells(x, y + 1, cells);
+    if (x < field_width_ - 1) FindShipCells(x + 1, y, cells);
+    if (y < field_height_ - 1) FindShipCells(x, y + 1, cells);
     if (x > 0) FindShipCells(x - 1, y, cells);
     if (y > 0) FindShipCells(x, y - 1, cells);
 }
 
 bool ShipHandler::PlaceShips() {
-    bool result = PlaceShipsRandomly() || PlaceShipsLinear();
-
-    for (uint64_t y = 0; y < field_height_; ++y) {
-        for (uint64_t x = 0; x < field_width_; ++x) {
-            std::cout << field_->IsOneAt(x, y);
-        }
-
-        std::cout << '\n';
-    }
-
-    return result;
+    return PlaceShipsRandomly() || PlaceShipsLinear();
 }
 
 bool ShipHandler::PlaceShipsLinear() {
@@ -285,7 +275,7 @@ void ShipHandler::SetField() {
 
     density /= field_height_;
 
-    if (density < 0.25) {
+    if (density < 0.1) {
         field_ = new MappedField(field_width_, field_height_);
     } else if (density < 0.75) {
         field_ = new CompressedField(field_width_, field_height_);

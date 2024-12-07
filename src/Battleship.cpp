@@ -4,8 +4,6 @@
 #include "field/CompressedField.hpp"
 #include "field/MappedField.hpp"
 
-#include <iostream>
-
 namespace Battleship {
 
 // Max area of a field that can be stored in a simple binary matrix (30 MB)
@@ -37,7 +35,7 @@ bool Battleship::LoadFrom(const std::string& path) {
     }
 
     RefreshGame();
-    game_mode_ = GameMode::kSlave;
+    game_mode_ = GameMode::kMaster;
     ship_handler_ = new ShipHandler();
 
     if (!ship_handler_->LoadFromFile(path)) {
@@ -143,7 +141,7 @@ std::optional<FieldPoint> Battleship::MakeNextShot() {
     return strategy_->MakeNextShot();
 }
 
-std::optional<ShotResult> Battleship::RecieveShot(uint64_t x, uint64_t y) {
+std::optional<ShotResult> Battleship::ProcessShot(uint64_t x, uint64_t y) {
     if (strategy_ == nullptr) {
         return std::nullopt;
     }

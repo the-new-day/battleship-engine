@@ -16,10 +16,10 @@ bool RleBlock::IsOneAt(uint64_t x, uint64_t y) const {
     size_t skipped_bits = 0;
     bool is_odd_block = true;
 
-    x = y * width_ + x;
+    uint64_t pos = y * width_ + x;
 
     for (const uint64_t& block_size : data_) {
-        if (skipped_bits + block_size <= x) {
+        if (skipped_bits + block_size <= pos) {
             skipped_bits += block_size;
             is_odd_block = !is_odd_block;
             continue;
@@ -39,13 +39,13 @@ void RleBlock::SetBitAt(uint64_t x, uint64_t y, bool to_one) {
     uint64_t skipped_bits = 0;
     bool is_odd_block = false;
 
-    x = y * width_ + x;
+    uint64_t pos = y * width_ + x;
 
     for (size_t i = 0; i < data_.size(); ++i) {
         const uint64_t block_size = data_[i];
         is_odd_block = !is_odd_block;
 
-        if (skipped_bits + block_size <= x) {
+        if (skipped_bits + block_size <= pos) {
             skipped_bits += block_size;
             continue;
         }
@@ -81,7 +81,7 @@ void RleBlock::SetBitAt(uint64_t x, uint64_t y, bool to_one) {
             return;
         }
 
-        uint64_t first_new_block_size = x - skipped_bits;
+        uint64_t first_new_block_size = pos - skipped_bits;
 
         if (first_new_block_size == 0) {
             if (i == 0) {

@@ -10,7 +10,7 @@ namespace Battleship {
 
 class MappedField : public Field {
 public:
-    MappedField(uint64_t width, uint64_t height);
+    using Field::Field;
 
     void SetBit(uint64_t x, uint64_t y) override;
     bool IsOneAt(uint64_t x, uint64_t y) const override;

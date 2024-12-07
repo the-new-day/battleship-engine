@@ -137,8 +137,7 @@ bool ConsoleApi::ParseGet(std::string_view cmd) {
         return false;
     }
     
-    cmd = cmd.substr(cmd.find(' ') + 1);
-    std::string_view parameter = cmd.substr(0, cmd.find(' '));
+    std::string_view parameter = cmd.substr(cmd.find(' ') + 1);
 
     if (parameter == "width") {
         auto width = game_.GetWidth();
@@ -200,7 +199,7 @@ bool ConsoleApi::HandleShot(std::string_view cmd) {
         return false;
     }
 
-    ShotResult result = game_.RecieveShot(x.value(), y.value()).value();
+    ShotResult result = game_.ProcessShot(x.value(), y.value()).value();
 
     if (result == ShotResult::kMiss) {
         std::cout << "miss";

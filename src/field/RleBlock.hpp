@@ -2,7 +2,6 @@
 
 #include <cstdint>
 #include <vector>
-#include <cstddef>
 
 namespace Battleship {
 
@@ -22,7 +21,6 @@ private:
     bool starts_with_zero_ = true;
 
     std::vector<uint64_t> data_;
-    // I was tempted to use std::list, but that would waste 16 extra bytes per node
 
     bool IsInBounds(uint64_t x, uint64_t y) const;
 };

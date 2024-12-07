@@ -48,7 +48,9 @@ void CompressedField::SetBit(uint64_t x, uint64_t y, bool to_one) {
         return;
     }
 
-    AddBlock(x, y);
+    if (!blocks_.contains(block_index)) {
+        AddBlock(x, y);
+    }
     
     RleBlock& block = blocks_.at(block_index);
 
@@ -63,12 +65,7 @@ void CompressedField::SetBit(uint64_t x, uint64_t y, bool to_one) {
 }
 
 void CompressedField::AddBlock(uint64_t x, uint64_t y) {
-    FieldPoint block_index = GetBlockIndex(x, y);
-    if (blocks_.contains(block_index)) {
-        return;
-    }
-
-    blocks_.emplace(block_index, RleBlock(kRleBlockSize, kRleBlockSize));
+    blocks_.emplace(GetBlockIndex(x, y), RleBlock(kRleBlockSize, kRleBlockSize));
 }
 
 } // namespace Battleship

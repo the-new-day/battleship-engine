@@ -2,8 +2,6 @@
 
 namespace Battleship {
 
-MappedField::MappedField(uint64_t width, uint64_t height) : Field(width, height) {}
-
 void MappedField::SetBit(uint64_t x, uint64_t y) {
     if (!IsInBounds(x, y)) {
         return;

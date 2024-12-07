@@ -1,72 +1,19 @@
-#include "ParityStrategy.hpp"
+#include "HuntingStrategy.hpp"
 
 #include <algorithm>
 
 namespace Battleship {
-
-FieldPoint Battleship::ParityStrategy::GetNextShot() {
-    if (last_shot_result_ == ShotResult::kHit || last_shot_result_ == ShotResult::kKill) {
-        last_successful_hunt_shot_ = last_shot_point_;
-    }
-
-    if (last_shot_result_ == ShotResult::kHit && (target_cells_.empty() || target_cells_.back() != last_shot_point_)) {
-        target_cells_.push_back(last_shot_point_);
-    } else if (last_shot_result_ == ShotResult::kKill) {
-        target_cells_.push_back(last_shot_point_);
-        --enemy_ships_count_[target_cells_.size()];
-        UpdateSafeZone();
-        target_cells_.clear();
-        potential_targets_.clear();
-    }
-
-    if (last_shot_result_ == ShotResult::kHit || !target_cells_.empty()) {
-        MakeNextHuntingShot();
-    } else {
-        MakeNextStrategicShot();
-        last_shot_point_ = last_strategic_shot_;
-    }
-
-    return last_shot_point_;
+HuntingStrategy::HuntingStrategy(
+    uint64_t field_width, 
+    uint64_t field_height, 
+    const std::map<uint8_t, uint64_t>& ship_types, 
+    Field *enemy_field)
+    : Strategy(field_width, field_height, ship_types, enemy_field) {
+    target_cells_.reserve(kMaxShipLength);
+    potential_targets_.reserve(4);
 }
 
-void ParityStrategy::MakeNextStrategicShot() {
-    FieldPoint next_shot = ChooseNextStrategicShot(last_strategic_shot_);
-
-    while (enemy_field_->IsOneAt(next_shot.x, next_shot.y)) {
-        if (last_strategic_shot_ == next_shot) {
-            return;
-        }
-
-        next_shot = ChooseNextStrategicShot(next_shot);
-    }
-
-    last_strategic_shot_ = next_shot;
-}
-
-FieldPoint ParityStrategy::ChooseNextStrategicShot(FieldPoint last_shot) {
-    FieldPoint next_shot = last_shot;
-
-    if (next_shot.x + 2 >= field_width_) {
-        if (next_shot.y < field_height_ - 1) {
-            ++next_shot.y;
-            if (was_parity_changed_) {
-                next_shot.x = next_shot.y % 2 + 1;
-            } else {
-                next_shot.x = next_shot.y % 2;
-            }
-        } else {
-            next_shot.y = 0;
-            next_shot.x = (field_width_ == 1) ? 0 : 1;
-            was_parity_changed_ = true;
-        }
-    } else {
-        next_shot.x += 2;
-    }
-
-    return next_shot;
-}
-
-void ParityStrategy::MakeNextHuntingShot() {
+void HuntingStrategy::MakeNextHuntingShot() {
     if (target_cells_.size() == 1) {
         if (last_successful_hunt_shot_.x > 0
         && !enemy_field_->IsOneAt(last_successful_hunt_shot_.x - 1, last_successful_hunt_shot_.y)) {
@@ -125,7 +72,7 @@ void ParityStrategy::MakeNextHuntingShot() {
     potential_targets_.pop_back();
 }
 
-void ParityStrategy::UpdateSafeZone() {
+void HuntingStrategy::UpdateSafeZone() {
     if (target_cells_.size() == 1) {
         const FieldPoint& cell = target_cells_[0];
         for (uint64_t x = cell.x - (cell.x == 0 ? 0 : 1); x <= cell.x + (cell.x == field_width_ - 1 ? 0 : 1); ++x) {
@@ -157,10 +104,4 @@ void ParityStrategy::UpdateSafeZone() {
     }
 }
 
-void ParityStrategy::StartGame() {
-    is_game_started_ = true;
-    last_shot_point_ = {0, 0};
-    last_strategic_shot_ = {0, 0};
-}
-
-} // namespace Battleship
+} // namespace Battleshi[]

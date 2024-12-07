@@ -68,7 +68,7 @@ public:
     void SetStrategy(StrategyType strategy_type);
 
     std::optional<FieldPoint> MakeNextShot();
-    std::optional<ShotResult> RecieveShot(uint64_t x, uint64_t y);
+    std::optional<ShotResult> ProcessShot(uint64_t x, uint64_t y);
 
     void SetLastShotResult(ShotResult result);
 

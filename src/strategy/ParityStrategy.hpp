@@ -1,17 +1,14 @@
 #pragma once
 
-#include "Strategy.hpp"
+#include "HuntingStrategy.hpp"
 
 namespace Battleship {
 
-class ParityStrategy : public Strategy {
+class ParityStrategy : public HuntingStrategy {
 public:
-    ParityStrategy(uint64_t field_width,
-                   uint64_t field_height, 
-                   const std::map<uint8_t, uint64_t>& ship_types,
-                   Field* enemy_field);
-
-    FieldPoint GetNextShot();
+    using HuntingStrategy::HuntingStrategy;
+    
+    FieldPoint GetNextShot() override;
 
 private:
     FieldPoint last_strategic_shot_;
