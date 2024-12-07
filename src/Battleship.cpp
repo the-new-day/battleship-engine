@@ -9,7 +9,7 @@ namespace Battleship {
 // Max area of a field that can be stored in a simple binary matrix (30 MB)
 const uint64_t kMaxMatrixFieldArea = 251'658'240;
 
-const uint64_t kMaxProbabilityStrategySize = 1'000'000;
+const uint64_t kMaxProbabilityStrategySize = 100'000;
 
 Battleship::Battleship() {
     for (uint8_t i = 1; i <= kMaxShipLength; ++i) {
@@ -35,7 +35,7 @@ bool Battleship::LoadFrom(const std::string& path) {
     }
 
     RefreshGame();
-    game_mode_ = GameMode::kMaster;
+    game_mode_ = GameMode::kSlave;
     ship_handler_ = new ShipHandler();
 
     if (!ship_handler_->LoadFromFile(path)) {
@@ -46,6 +46,10 @@ bool Battleship::LoadFrom(const std::string& path) {
     field_width_ = ship_handler_->GetFieldWidth();
     field_height_ = ship_handler_->GetFieldHeight();
     status_ = BattleshipStatus::kConfigurationDone;
+
+    for (auto& [size, amount] : ships_count_) {
+        amount = ship_handler_->GetShipsCount(size);
+    }
 
     return true;
 }
@@ -115,10 +119,10 @@ void Battleship::ChangeStrategy() {
     } else if (strategy_type_ == StrategyType::kProbability) {
         strategy_ = probability_strategy_;
     } else {
-        // if (static_cast<double>(field_width_.value()) / kMaxProbabilityStrategySize * field_height_.value() < 1) {
-        //     strategy_ = probability_strategy_;
-        //     return;
-        // }
+        if (static_cast<double>(field_width_.value()) / kMaxProbabilityStrategySize * field_height_.value() <= 1) {
+            strategy_ = probability_strategy_;
+            return;
+        }
 
         strategy_ = parity_strategy_;
     }

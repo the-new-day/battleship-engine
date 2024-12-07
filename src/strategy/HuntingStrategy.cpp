@@ -13,6 +13,31 @@ HuntingStrategy::HuntingStrategy(
     potential_targets_.reserve(4);
 }
 
+FieldPoint HuntingStrategy::GetNextShot() {
+    if (last_shot_result_ == ShotResult::kHit || last_shot_result_ == ShotResult::kKill) {
+        last_successful_hunt_shot_ = last_shot_point_;
+    }
+
+    if (last_shot_result_ == ShotResult::kHit && (target_cells_.empty() || target_cells_.back() != last_shot_point_)) {
+        target_cells_.push_back(last_shot_point_);
+    } else if (last_shot_result_ == ShotResult::kKill) {
+        target_cells_.push_back(last_shot_point_);
+        --enemy_ships_count_[target_cells_.size()];
+        UpdateSafeZone();
+        target_cells_.clear();
+        potential_targets_.clear();
+    }
+
+    if (last_shot_result_ == ShotResult::kHit || !target_cells_.empty()) {
+        MakeNextHuntingShot();
+    } else {
+        MakeNextStrategicShot();
+        last_shot_point_ = last_strategic_shot_;
+    }
+
+    return last_shot_point_;
+}
+
 void HuntingStrategy::MakeNextHuntingShot() {
     if (target_cells_.size() == 1) {
         if (last_successful_hunt_shot_.x > 0

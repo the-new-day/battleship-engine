@@ -20,11 +20,13 @@ Strategy::Strategy(uint64_t field_width,
 FieldPoint Strategy::MakeNextShot() {
     if (!is_game_started_) {
         StartGame();
+        enemy_field_->SetBit(last_shot_point_.x, last_shot_point_.y);
         return last_shot_point_;
     }
 
     FieldPoint point = GetNextShot();
     last_shot_point_ = point;
+    enemy_field_->SetBit(last_shot_point_.x, last_shot_point_.y);
     return last_shot_point_;
 }
 
@@ -35,7 +37,6 @@ void Strategy::SetLastShotCoords(uint64_t x, uint64_t y) {
 
 void Strategy::SetLastShotResult(ShotResult result) {
     last_shot_result_ = result;
-    enemy_field_->SetBit(last_shot_point_.x, last_shot_point_.y);
 }
 
 bool Strategy::EnemyHasShips() const {

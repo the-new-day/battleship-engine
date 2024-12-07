@@ -29,12 +29,17 @@ bool ShipHandler::LoadFromFile(const std::string& filename) {
         return false;
     }
 
-    delete field_;
+    uint64_t width;
+    uint64_t height;
 
-    if (!(file >> field_width_ >> field_height_)) {
+    if (!(file >> width >> height)) {
         return false;
     }
 
+    field_width_ = width;
+    field_height_ = height;
+
+    delete field_;
     SetField();
     
     for (auto& p : ships_count_) {
@@ -262,7 +267,7 @@ bool ShipHandler::PlaceShipsRandomly() {
 }
 
 void ShipHandler::SetField() {
-    if (static_cast<double>(field_width_) / kMaxMatrixFieldArea * field_height_ < 1) {
+    if (static_cast<double>(field_width_) / kMaxMatrixFieldArea * field_height_ <= 1) {
         field_ = new MartixField(field_width_, field_height_);
         return;
     }

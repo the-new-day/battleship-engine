@@ -55,6 +55,11 @@ bool ConsoleApi::ParseSet(std::string_view cmd) {
     }
 
     cmd = cmd.substr(cmd.find(' ') + 1);
+
+    if (cmd.find(' ') == std::string_view::npos) {
+        return false;
+    }
+
     std::string_view parameter = cmd.substr(0, cmd.find(' '));
     std::string_view value_str = cmd.substr(parameter.length() + 1);
 
@@ -113,7 +118,7 @@ bool ConsoleApi::ParseSet(std::string_view cmd) {
 }
 
 bool ConsoleApi::ParseCreate(std::string_view cmd) {
-    if (is_game_created_ && !game_.IsFinished()) {
+    if (!is_game_created_ || !game_.IsFinished()) {
         return false;
     }
 
@@ -138,6 +143,7 @@ bool ConsoleApi::ParseGet(std::string_view cmd) {
     }
     
     std::string_view parameter = cmd.substr(cmd.find(' ') + 1);
+    parameter = parameter.substr(0, parameter.find(' '));
 
     if (parameter == "width") {
         auto width = game_.GetWidth();
@@ -154,7 +160,7 @@ bool ConsoleApi::ParseGet(std::string_view cmd) {
 
         std::cout << height.value();
     } else if (parameter == "count") {
-        std::string_view value_str = cmd.substr(parameter.length() + 1);
+        std::string_view value_str = cmd.substr(parameter.length() + 5);
         auto ship_size = ParseNumber<uint8_t>(value_str);
 
         if (!ship_size.has_value() || ship_size == 0 || ship_size > kMaxShipLength) {
@@ -213,7 +219,7 @@ bool ConsoleApi::HandleShot(std::string_view cmd) {
 }
 
 bool ConsoleApi::HandleStart(std::string_view cmd) {
-    if (cmd != "start" || !game_.Start()) {
+    if (!is_game_created_ || cmd != "start" || !game_.Start()) {
         return false;
     }
 
@@ -233,22 +239,22 @@ bool ConsoleApi::HandleStop(std::string_view cmd) {
 }
 
 bool ConsoleApi::HandleLoad(std::string_view cmd) {
-    if (game_.LoadFrom(std::string(cmd.substr(5)))) {
-        std::cout << "ok";
-        is_game_created_ = true;
-        return true;
+    if (!game_.LoadFrom(std::string(cmd.substr(5)))) {
+        return false;
     }
 
-    return false;
+    std::cout << "ok";
+    is_game_created_ = true;
+    return true;
 }
 
 bool ConsoleApi::HandleDump(std::string_view cmd) {
-    if (game_.Dump(std::string(cmd.substr(5)))) {
-        std::cout << "ok";
-        return true;
+    if (!is_game_created_ || !game_.Dump(std::string(cmd.substr(5)))) {
+        return false;
     }
 
-    return false;
+    std::cout << "ok";
+    return true;
 }
 
 } // namespace Battleship
