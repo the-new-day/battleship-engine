@@ -97,6 +97,10 @@ bool Battleship::IsWin() const {
     return strategy_ != nullptr && !strategy_->EnemyHasShips();
 }
 
+bool Battleship::IsFinished() const {
+    return is_game_finished_ || IsWin() || IsLose();
+}
+
 void Battleship::InitStrategy() {
     ordered_strategy_ = new OrderedStrategy(field_width_.value(), field_height_.value(), ships_count_, enemy_field_);
     parity_strategy_ = new ParityStrategy(field_width_.value(), field_height_.value(), ships_count_, enemy_field_);
@@ -151,12 +155,6 @@ void Battleship::SetLastShotResult(ShotResult result) {
     if (strategy_ != nullptr) {
         strategy_->SetLastShotResult(result);
     }
-}
-
-bool Battleship::IsFinished() const {
-    return is_game_finished_ 
-    || ship_handler_ != nullptr && !ship_handler_->HasAliveShips() 
-    || strategy_ != nullptr && !strategy_->EnemyHasShips();
 }
 
 bool Battleship::SetFieldHeight(uint64_t height) {

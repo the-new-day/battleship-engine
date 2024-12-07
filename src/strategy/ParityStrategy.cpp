@@ -25,6 +25,7 @@ FieldPoint Battleship::ParityStrategy::GetNextShot() {
         target_cells_.push_back(last_shot_point_);
     } else if (last_shot_result_ == ShotResult::kKill) {
         target_cells_.push_back(last_shot_point_);
+        --enemy_ships_count_[target_cells_.size()];
         UpdateSafeZone();
         target_cells_.clear();
         potential_targets_.clear();
@@ -60,7 +61,11 @@ FieldPoint ParityStrategy::ChooseNextStrategicShot(FieldPoint last_shot) {
     if (next_shot.x + 2 >= field_width_) {
         if (next_shot.y < field_height_ - 1) {
             ++next_shot.y;
-            next_shot.x = was_parity_changed_ && next_shot.y % 2 == 1 ? 0 : 1;
+            if (was_parity_changed_) {
+                next_shot.x = next_shot.y % 2 + 1;
+            } else {
+                next_shot.x = next_shot.y % 2;
+            }
         } else {
             next_shot.y = 0;
             next_shot.x = (field_width_ == 1) ? 0 : 1;
@@ -75,17 +80,19 @@ FieldPoint ParityStrategy::ChooseNextStrategicShot(FieldPoint last_shot) {
 
 void ParityStrategy::MakeNextHuntingShot() {
     if (target_cells_.size() == 1) {
-        if (!enemy_field_->IsOneAt(last_successful_hunt_shot_.x - 1, last_successful_hunt_shot_.y)) {
+        if (last_successful_hunt_shot_.x > 0
+        && !enemy_field_->IsOneAt(last_successful_hunt_shot_.x - 1, last_successful_hunt_shot_.y)) {
             potential_targets_.push_back({last_successful_hunt_shot_.x - 1, last_successful_hunt_shot_.y});
-        }
-
-        if (!enemy_field_->IsOneAt(last_successful_hunt_shot_.x, last_successful_hunt_shot_.y - 1)) {
-            potential_targets_.push_back({last_successful_hunt_shot_.x, last_successful_hunt_shot_.y - 1});
         }
 
         if (last_successful_hunt_shot_.x < field_width_ - 1 
         && !enemy_field_->IsOneAt(last_successful_hunt_shot_.x + 1, last_successful_hunt_shot_.y)) {
             potential_targets_.push_back({last_successful_hunt_shot_.x + 1, last_successful_hunt_shot_.y});
+        }
+
+        if (last_successful_hunt_shot_.y > 0
+        && !enemy_field_->IsOneAt(last_successful_hunt_shot_.x, last_successful_hunt_shot_.y - 1)) {
+            potential_targets_.push_back({last_successful_hunt_shot_.x, last_successful_hunt_shot_.y - 1});
         }
 
         if (last_successful_hunt_shot_.y < field_height_ - 1 
