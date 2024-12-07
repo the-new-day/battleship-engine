@@ -54,16 +54,17 @@ void ParityStrategy::MakeNextStrategicShot() {
     last_strategic_shot_ = next_shot;
 }
 
-FieldPoint ParityStrategy::ChooseNextStrategicShot(FieldPoint last_shot) const {
+FieldPoint ParityStrategy::ChooseNextStrategicShot(FieldPoint last_shot) {
     FieldPoint next_shot = last_shot;
 
     if (next_shot.x + 2 >= field_width_) {
         if (next_shot.y < field_height_ - 1) {
             ++next_shot.y;
-            next_shot.x = next_shot.y % 2;
+            next_shot.x = was_parity_changed_ && next_shot.y % 2 == 1 ? 0 : 1;
         } else {
             next_shot.y = 0;
             next_shot.x = (field_width_ == 1) ? 0 : 1;
+            was_parity_changed_ = true;
         }
     } else {
         next_shot.x += 2;

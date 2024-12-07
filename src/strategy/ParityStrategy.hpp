@@ -20,6 +20,8 @@ private:
     std::vector<FieldPoint> target_cells_;
     std::vector<FieldPoint> potential_targets_;
 
+    bool was_parity_changed_ = false;
+
     void StartGame() override;
 
     void MakeNextStrategicShot();
@@ -27,7 +29,7 @@ private:
 
     void UpdateSafeZone();
 
-    FieldPoint ChooseNextStrategicShot(FieldPoint last_shot) const;
+    FieldPoint ChooseNextStrategicShot(FieldPoint last_shot);
 };
 
 } // namespace Battleship
