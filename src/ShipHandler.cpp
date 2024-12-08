@@ -9,14 +9,6 @@
 #include <random>
 #include <fstream>
 
-
-
-
-
-
-
-#include <iostream>
-
 namespace Battleship {
 
 // Max area of a field to be stored in a simple binary matrix (30 MB)

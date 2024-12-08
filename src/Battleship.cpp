@@ -1,9 +1,5 @@
 #include "Battleship.hpp"
-
-#include "field/MatrixField.hpp"
-#include "field/CompressedDenseField.hpp"
 #include "field/CompressedField.hpp"
-#include "field/MappedField.hpp"
 
 namespace Battleship {
 
