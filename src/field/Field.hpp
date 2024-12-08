@@ -10,9 +10,6 @@ struct FieldPoint {
     uint64_t x;
     uint64_t y;
 
-    FieldPoint() = default;
-    FieldPoint(uint64_t x, uint64_t y) : x(x), y(y) {}
-
     bool operator==(const FieldPoint& other) const {
         return x == other.x && y == other.y;
     }
