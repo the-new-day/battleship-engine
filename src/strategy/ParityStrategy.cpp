@@ -5,6 +5,10 @@
 namespace Battleship {
 
 void ParityStrategy::MakeNextStrategicShot() {
+    if (last_shot_result_ == ShotResult::kKill) {
+        UpdateSafeZone();
+    }
+
     FieldPoint next_shot = ChooseNextStrategicShot(last_strategic_shot_);
 
     while (enemy_field_->IsOneAt(next_shot.x, next_shot.y)) {
@@ -39,6 +43,38 @@ FieldPoint ParityStrategy::ChooseNextStrategicShot(FieldPoint last_shot) {
     }
 
     return next_shot;
+}
+
+void ParityStrategy::UpdateSafeZone() {
+    if (target_cells_.size() == 1) {
+        const FieldPoint& cell = target_cells_[0];
+        for (uint64_t x = cell.x - (cell.x == 0 ? 0 : 1); x <= cell.x + (cell.x == field_width_ - 1 ? 0 : 1); ++x) {
+            for (uint64_t y = cell.y - (cell.y == 0 ? 0 : 1); y <= cell.y + (cell.y == field_height_ - 1 ? 0 : 1); ++y) {
+                enemy_field_->SetBit(x, y);
+            }
+        }
+
+        return;
+    }
+
+    bool is_horizontal = target_cells_[0].y == target_cells_[1].y;
+
+    std::sort(
+        target_cells_.begin(), 
+        target_cells_.end(),
+        [is_horizontal](const FieldPoint& p1, const FieldPoint& p2) { 
+            return is_horizontal && p1.x < p2.x || !is_horizontal && p1.y < p2.y;
+        });
+
+    for (uint64_t x = (target_cells_[0].x == 0 ? 0 : target_cells_[0].x - 1); 
+         x <= (target_cells_.back().x == field_width_ - 1 ? field_width_ - 1 : target_cells_.back().x + 1);
+         ++x) {
+        for (uint64_t y = (target_cells_[0].y == 0 ? 0 : target_cells_[0].y - 1); 
+             y <= (target_cells_.back().y == field_height_ - 1 ? field_height_ - 1 : target_cells_.back().y + 1);
+             ++y) {
+            enemy_field_->SetBit(x, y);
+        }
+    }
 }
 
 void ParityStrategy::StartGame() {

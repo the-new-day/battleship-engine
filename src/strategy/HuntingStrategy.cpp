@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include <iostream> // TODO: remove
+
 namespace Battleship {
 HuntingStrategy::HuntingStrategy(
     uint64_t field_width, 
@@ -16,32 +18,27 @@ HuntingStrategy::HuntingStrategy(
 FieldPoint HuntingStrategy::GetNextShot() {
     if (last_shot_result_ == ShotResult::kHit || last_shot_result_ == ShotResult::kKill) {
         last_successful_hunt_shot_ = last_shot_point_;
+        target_cells_.push_back(last_shot_point_);
     }
 
-    if (last_shot_result_ == ShotResult::kHit && (target_cells_.empty() || target_cells_.back() != last_shot_point_)) {
-        target_cells_.push_back(last_shot_point_);
-    } else if (last_shot_result_ == ShotResult::kKill) {
-        target_cells_.push_back(last_shot_point_);
-        --enemy_ships_count_[target_cells_.size()];
-        UpdateSafeZone();
-        target_cells_.clear();
-        potential_targets_.clear();
-    }
-
-    if (last_shot_result_ == ShotResult::kHit || !target_cells_.empty()) {
+    if (last_shot_result_ == ShotResult::kHit || (!target_cells_.empty() && last_shot_result_ != ShotResult::kKill)) {
         MakeNextHuntingShot();
     } else {
         MakeNextStrategicShot();
         last_shot_point_ = last_strategic_shot_;
     }
 
+    if (last_shot_result_ == ShotResult::kKill) {
+        --enemy_ships_count_[target_cells_.size()];
+        target_cells_.clear();
+        potential_targets_.clear();
+    }
+
     return last_shot_point_;
 }
 
 void HuntingStrategy::MakeNextHuntingShot() {
-    if (target_cells_.size() == 1) {
-        potential_targets_.clear();
-
+    if (target_cells_.size() == 1 && potential_targets_.empty()) {
         if (last_successful_hunt_shot_.x > 0
         && !enemy_field_->IsOneAt(last_successful_hunt_shot_.x - 1, last_successful_hunt_shot_.y)) {
             potential_targets_.emplace_back(last_successful_hunt_shot_.x - 1, last_successful_hunt_shot_.y);
@@ -61,11 +58,7 @@ void HuntingStrategy::MakeNextHuntingShot() {
         && !enemy_field_->IsOneAt(last_successful_hunt_shot_.x, last_successful_hunt_shot_.y + 1)) {
             potential_targets_.emplace_back(last_successful_hunt_shot_.x, last_successful_hunt_shot_.y + 1);
         }
-    } else {
-        if (target_cells_.size() > 1) {
-            potential_targets_.clear();
-        }
-
+    } else if (target_cells_.size() > 1) {
         if (target_cells_[0].y == target_cells_[1].y) {
             auto cmp = [](const FieldPoint& p1, const FieldPoint& p2) { return p1.x < p2.x; };
 
@@ -97,38 +90,6 @@ void HuntingStrategy::MakeNextHuntingShot() {
 
     last_shot_point_ = potential_targets_.back();
     potential_targets_.pop_back();
-}
-
-void HuntingStrategy::UpdateSafeZone() {
-    if (target_cells_.size() == 1) {
-        const FieldPoint& cell = target_cells_[0];
-        for (uint64_t x = cell.x - (cell.x == 0 ? 0 : 1); x <= cell.x + (cell.x == field_width_ - 1 ? 0 : 1); ++x) {
-            for (uint64_t y = cell.y - (cell.y == 0 ? 0 : 1); y <= cell.y + (cell.y == field_height_ - 1 ? 0 : 1); ++y) {
-                enemy_field_->SetBit(x, y);
-            }
-        }
-
-        return;
-    }
-
-    bool is_horizontal = target_cells_[0].y == target_cells_[1].y;
-
-    std::sort(
-        target_cells_.begin(), 
-        target_cells_.end(),
-        [is_horizontal](const FieldPoint& p1, const FieldPoint& p2) { 
-            return is_horizontal && p1.x < p2.x || !is_horizontal && p1.y < p2.y;
-        });
-
-    for (uint64_t x = (target_cells_[0].x == 0 ? 0 : target_cells_[0].x - 1); 
-         x <= (target_cells_.back().x == field_width_ - 1 ? field_width_ - 1 : target_cells_.back().x + 1);
-         ++x) {
-        for (uint64_t y = (target_cells_[0].y == 0 ? 0 : target_cells_[0].y - 1); 
-             y <= (target_cells_.back().y == field_height_ - 1 ? field_height_ - 1 : target_cells_.back().y + 1);
-             ++y) {
-            enemy_field_->SetBit(x, y);
-        }
-    }
 }
 
 } // namespace Battleship

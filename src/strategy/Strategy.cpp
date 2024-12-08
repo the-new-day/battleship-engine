@@ -1,6 +1,4 @@
 #include "Strategy.hpp"
-#include "field/Field.hpp"
-#include "field/CompressedField.hpp"
 
 namespace Battleship {
 
@@ -16,13 +14,11 @@ Strategy::Strategy(uint64_t field_width,
 FieldPoint Strategy::MakeNextShot() {
     if (!is_game_started_) {
         StartGame();
-        enemy_field_->SetBit(last_shot_point_.x, last_shot_point_.y);
         return last_shot_point_;
     }
 
     FieldPoint point = GetNextShot();
     last_shot_point_ = point;
-    enemy_field_->SetBit(last_shot_point_.x, last_shot_point_.y);
     return last_shot_point_;
 }
 

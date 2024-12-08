@@ -15,6 +15,8 @@ private:
 
     void MakeNextStrategicShot() override;
     FieldPoint ChooseNextStrategicShot(FieldPoint last_shot);
+
+    void UpdateSafeZone();
 };
 
 } // namespace Battleship

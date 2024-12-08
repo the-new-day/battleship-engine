@@ -21,7 +21,6 @@ protected:
     std::vector<FieldPoint> potential_targets_;
 
     void MakeNextHuntingShot();
-    void UpdateSafeZone();
 
     virtual void MakeNextStrategicShot() = 0;
 };
