@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include <iostream>
+
 namespace Battleship {
 HuntingStrategy::HuntingStrategy(
     uint64_t field_width, 
@@ -40,27 +42,29 @@ FieldPoint HuntingStrategy::GetNextShot() {
 
 void HuntingStrategy::MakeNextHuntingShot() {
     if (target_cells_.size() == 1) {
+        potential_targets_.clear();
+
         if (last_successful_hunt_shot_.x > 0
         && !enemy_field_->IsOneAt(last_successful_hunt_shot_.x - 1, last_successful_hunt_shot_.y)) {
-            potential_targets_.push_back({last_successful_hunt_shot_.x - 1, last_successful_hunt_shot_.y});
+            potential_targets_.emplace_back(last_successful_hunt_shot_.x - 1, last_successful_hunt_shot_.y);
         }
 
         if (last_successful_hunt_shot_.x < field_width_ - 1 
         && !enemy_field_->IsOneAt(last_successful_hunt_shot_.x + 1, last_successful_hunt_shot_.y)) {
-            potential_targets_.push_back({last_successful_hunt_shot_.x + 1, last_successful_hunt_shot_.y});
+            potential_targets_.emplace_back(last_successful_hunt_shot_.x + 1, last_successful_hunt_shot_.y);
         }
 
         if (last_successful_hunt_shot_.y > 0
         && !enemy_field_->IsOneAt(last_successful_hunt_shot_.x, last_successful_hunt_shot_.y - 1)) {
-            potential_targets_.push_back({last_successful_hunt_shot_.x, last_successful_hunt_shot_.y - 1});
+            potential_targets_.emplace_back(last_successful_hunt_shot_.x, last_successful_hunt_shot_.y - 1);
         }
 
         if (last_successful_hunt_shot_.y < field_height_ - 1 
         && !enemy_field_->IsOneAt(last_successful_hunt_shot_.x, last_successful_hunt_shot_.y + 1)) {
-            potential_targets_.push_back({last_successful_hunt_shot_.x, last_successful_hunt_shot_.y + 1});
+            potential_targets_.emplace_back(last_successful_hunt_shot_.x, last_successful_hunt_shot_.y + 1);
         }
     } else {
-        if (target_cells_.size() == 2) {
+        if (target_cells_.size() > 1) {
             potential_targets_.clear();
         }
 
@@ -71,11 +75,11 @@ void HuntingStrategy::MakeNextHuntingShot() {
             FieldPoint rightmost_cell = *std::max_element(target_cells_.begin(), target_cells_.end(), cmp);
 
             if (leftmost_cell.x > 0 && !enemy_field_->IsOneAt(leftmost_cell.x - 1, leftmost_cell.y)) {
-                potential_targets_.push_back({leftmost_cell.x - 1, leftmost_cell.y});
+                potential_targets_.emplace_back(leftmost_cell.x - 1, leftmost_cell.y);
             }
 
-            if (rightmost_cell.y < field_width_ - 1 && !enemy_field_->IsOneAt(rightmost_cell.x + 1, rightmost_cell.y)) {
-                potential_targets_.push_back({rightmost_cell.x + 1, rightmost_cell.y});
+            if (rightmost_cell.x < field_width_ - 1 && !enemy_field_->IsOneAt(rightmost_cell.x + 1, rightmost_cell.y)) {
+                potential_targets_.emplace_back(rightmost_cell.x + 1, rightmost_cell.y);
             }
         } else {
             auto cmp = [](const FieldPoint& p1, const FieldPoint& p2) { return p1.y < p2.y; };
@@ -84,11 +88,11 @@ void HuntingStrategy::MakeNextHuntingShot() {
             FieldPoint bottom_cell = *std::max_element(target_cells_.begin(), target_cells_.end(), cmp);
 
             if (top_cell.y > 0 && !enemy_field_->IsOneAt(top_cell.x, top_cell.y - 1)) {
-                potential_targets_.push_back({top_cell.x, top_cell.y - 1});
+                potential_targets_.emplace_back(top_cell.x, top_cell.y - 1);
             }
 
             if (bottom_cell.y < field_height_ - 1 && !enemy_field_->IsOneAt(bottom_cell.x, bottom_cell.y + 1)) {
-                potential_targets_.push_back({bottom_cell.x, bottom_cell.y + 1});
+                potential_targets_.emplace_back(bottom_cell.x, bottom_cell.y + 1);
             }
         }
     }
