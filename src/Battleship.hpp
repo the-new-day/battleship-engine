@@ -5,7 +5,6 @@
 #include "strategy/Strategy.hpp"
 #include "strategy/OrderedStrategy.hpp"
 #include "strategy/ParityStrategy.hpp"
-#include "strategy/ProbabilityStrategy.hpp"
 
 #include "ShipHandler.hpp"
 
@@ -22,9 +21,7 @@ enum class GameMode {
 
 enum class StrategyType {
     kCustom,
-    kOrdered,
-    kParity,
-    kProbability
+    kOrdered
 };
 
 enum class BattleshipStatus {
@@ -100,7 +97,6 @@ private:
 
     OrderedStrategy* ordered_strategy_ = nullptr;
     ParityStrategy* parity_strategy_ = nullptr;
-    ProbabilityStrategy* probability_strategy_ = nullptr;
 
     Field* enemy_field_ = nullptr;
 

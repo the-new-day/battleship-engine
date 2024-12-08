@@ -92,10 +92,6 @@ bool ConsoleApi::ParseSet(std::string_view cmd) {
             game_.SetStrategy(StrategyType::kCustom);
         } else if (value_str == "ordered") {
             game_.SetStrategy(StrategyType::kOrdered);
-        } else if (value_str == "parity") {
-            game_.SetStrategy(StrategyType::kParity);
-        } else if (value_str == "probability") {
-            game_.SetStrategy(StrategyType::kProbability);
         } else {
             return false;
         }
@@ -118,7 +114,7 @@ bool ConsoleApi::ParseSet(std::string_view cmd) {
 }
 
 bool ConsoleApi::ParseCreate(std::string_view cmd) {
-    if (!is_game_created_ || !game_.IsFinished()) {
+    if (is_game_created_ && !game_.IsFinished()) {
         return false;
     }
 

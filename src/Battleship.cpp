@@ -9,8 +9,6 @@ namespace Battleship {
 // Max area of a field that can be stored in a simple binary matrix (30 MB)
 const uint64_t kMaxMatrixFieldArea = 251'658'240;
 
-const uint64_t kMaxProbabilityStrategySize = 100'000;
-
 Battleship::Battleship() {
     for (uint8_t i = 1; i <= kMaxShipLength; ++i) {
         ships_count_[i] = 0;
@@ -106,7 +104,6 @@ bool Battleship::IsFinished() const {
 void Battleship::InitStrategy() {
     ordered_strategy_ = new OrderedStrategy(field_width_.value(), field_height_.value(), ships_count_, enemy_field_);
     parity_strategy_ = new ParityStrategy(field_width_.value(), field_height_.value(), ships_count_, enemy_field_);
-    probability_strategy_ = new ProbabilityStrategy(field_width_.value(), field_height_.value(), ships_count_, enemy_field_);
 
     ChangeStrategy();
 }
@@ -114,16 +111,7 @@ void Battleship::InitStrategy() {
 void Battleship::ChangeStrategy() {
     if (strategy_type_ == StrategyType::kOrdered) {
         strategy_ = ordered_strategy_;
-    } else if (strategy_type_ == StrategyType::kParity) {
-        strategy_ = parity_strategy_;
-    } else if (strategy_type_ == StrategyType::kProbability) {
-        strategy_ = probability_strategy_;
-    } else {
-        if (static_cast<double>(field_width_.value()) / kMaxProbabilityStrategySize * field_height_.value() <= 1) {
-            strategy_ = probability_strategy_;
-            return;
-        }
-
+    } else if (strategy_type_ == StrategyType::kCustom) {
         strategy_ = parity_strategy_;
     }
 }
@@ -277,12 +265,10 @@ uint64_t Battleship::GetShipsCount(uint8_t ship_size) const {
 void Battleship::RefreshGame() {
     delete ordered_strategy_;
     delete parity_strategy_;
-    delete probability_strategy_;
     delete ship_handler_;
     delete enemy_field_;
 
     ordered_strategy_ = nullptr;
-    probability_strategy_ = nullptr;
     parity_strategy_ = nullptr;
     ship_handler_ = nullptr;
     enemy_field_ = nullptr;

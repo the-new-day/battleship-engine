@@ -1,7 +1,6 @@
 add_library(strategy
     Strategy.cpp
     OrderedStrategy.cpp
-    ProbabilityStrategy.cpp
     ParityStrategy.cpp
     HuntingStrategy.cpp)
 

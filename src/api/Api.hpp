@@ -2,8 +2,6 @@
 
 #include "Battleship.hpp"
 
-#include <string>
-
 namespace Battleship {
 
 class Api {

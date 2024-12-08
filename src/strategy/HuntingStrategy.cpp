@@ -70,7 +70,7 @@ void HuntingStrategy::MakeNextHuntingShot() {
             FieldPoint leftmost_cell = *std::min_element(target_cells_.begin(), target_cells_.end(), cmp);
             FieldPoint rightmost_cell = *std::max_element(target_cells_.begin(), target_cells_.end(), cmp);
 
-            if (!enemy_field_->IsOneAt(leftmost_cell.x - 1, leftmost_cell.y)) {
+            if (leftmost_cell.x > 0 && !enemy_field_->IsOneAt(leftmost_cell.x - 1, leftmost_cell.y)) {
                 potential_targets_.push_back({leftmost_cell.x - 1, leftmost_cell.y});
             }
 
@@ -83,7 +83,7 @@ void HuntingStrategy::MakeNextHuntingShot() {
             FieldPoint top_cell = *std::min_element(target_cells_.begin(), target_cells_.end(), cmp);
             FieldPoint bottom_cell = *std::max_element(target_cells_.begin(), target_cells_.end(), cmp);
 
-            if (!enemy_field_->IsOneAt(top_cell.x, top_cell.y - 1)) {
+            if (top_cell.y > 0 && !enemy_field_->IsOneAt(top_cell.x, top_cell.y - 1)) {
                 potential_targets_.push_back({top_cell.x, top_cell.y - 1});
             }
 
@@ -129,4 +129,4 @@ void HuntingStrategy::UpdateSafeZone() {
     }
 }
 
-} // namespace Battleshi[]
+} // namespace Battleship
