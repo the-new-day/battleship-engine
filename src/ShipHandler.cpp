@@ -9,6 +9,14 @@
 #include <random>
 #include <fstream>
 
+
+
+
+
+
+
+#include <iostream>
+
 namespace Battleship {
 
 // Max area of a field to be stored in a simple binary matrix (30 MB)
@@ -64,7 +72,7 @@ bool ShipHandler::LoadFromFile(const std::string& filename) {
         if (!IsPossibleToPlaceShip(x, y, ship_size, is_horizontal)) {
             return false;
         }
-        
+
         PlaceShip(x, y, ship_size, is_horizontal);
         ++ships_count_[ship_size];
     }

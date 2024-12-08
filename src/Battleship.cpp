@@ -47,6 +47,8 @@ bool Battleship::LoadFrom(const std::string& path) {
         amount = ship_handler_->GetShipsCount(size);
     }
 
+    was_loaded_from_file_ = true;
+
     return true;
 }
 
@@ -203,14 +205,17 @@ bool Battleship::Start() {
         return false;
     }
 
-    if (game_mode_ == GameMode::kMaster) {
-        SetMasterConfig();
-    }
-    
     RefreshGame();
     SetEnemyField();
     InitStrategy();
-    SetShipHandler();
+
+    if (!was_loaded_from_file_) {
+        SetShipHandler();
+    }
+
+    if (game_mode_ == GameMode::kMaster) {
+        SetMasterConfig();
+    }
 
     if (!ship_handler_->PlaceShips()) {
         status_ = BattleshipStatus::kWrongParameter;
@@ -230,6 +235,7 @@ bool Battleship::Stop() {
 
     is_game_running_ = false;
     is_game_finished_ = true;
+    was_loaded_from_file_ = false;
     status_ = BattleshipStatus::kConfigurationDone;
     return true;
 }
@@ -263,12 +269,15 @@ uint64_t Battleship::GetShipsCount(uint8_t ship_size) const {
 void Battleship::RefreshGame() {
     delete ordered_strategy_;
     delete parity_strategy_;
-    delete ship_handler_;
     delete enemy_field_;
+
+    if (!was_loaded_from_file_) {
+        delete ship_handler_;
+        ship_handler_ = nullptr;
+    }
 
     ordered_strategy_ = nullptr;
     parity_strategy_ = nullptr;
-    ship_handler_ = nullptr;
     enemy_field_ = nullptr;
 }
 

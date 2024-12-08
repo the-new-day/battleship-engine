@@ -85,6 +85,8 @@ private:
     bool is_game_running_ = false;
     bool is_game_finished_ = false;
 
+    bool was_loaded_from_file_ = false;
+
     ShipHandler* ship_handler_ = nullptr;
 
     std::optional<GameMode> game_mode_;
