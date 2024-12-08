@@ -27,6 +27,10 @@ void ConsoleApi::Start() {
     std::string command;
 
     while (std::getline(std::cin, command)) {
+        if (command.empty()) {
+            continue;
+        }
+
         std::string_view command_name(command);
         command_name = command_name.substr(0, command_name.find(' '));
 
