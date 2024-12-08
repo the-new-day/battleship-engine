@@ -15,6 +15,7 @@ Battleship::Battleship() {
 
 Battleship::~Battleship() {
     RefreshGame();
+    delete ship_handler_;
 }
 
 bool Battleship::Dump(const std::string& path) const {
@@ -134,7 +135,7 @@ std::optional<FieldPoint> Battleship::MakeNextShot() {
 }
 
 std::optional<ShotResult> Battleship::ProcessShot(uint64_t x, uint64_t y) {
-    if (strategy_ == nullptr) {
+    if (ship_handler_ == nullptr) {
         return std::nullopt;
     }
 
@@ -217,7 +218,7 @@ bool Battleship::Start() {
         SetMasterConfig();
     }
 
-    if (!ship_handler_->PlaceShips()) {
+    if (!was_loaded_from_file_ && !ship_handler_->PlaceShips()) {
         status_ = BattleshipStatus::kWrongParameter;
         return false;
     }
