@@ -1,13 +1,11 @@
 #include "Battleship.hpp"
+
 #include "field/MatrixField.hpp"
 #include "field/CompressedDenseField.hpp"
 #include "field/CompressedField.hpp"
 #include "field/MappedField.hpp"
 
 namespace Battleship {
-
-// Max area of a field that can be stored in a simple binary matrix (30 MB)
-const uint64_t kMaxMatrixFieldArea = 251'658'240;
 
 Battleship::Battleship() {
     for (uint8_t i = 1; i <= kMaxShipLength; ++i) {

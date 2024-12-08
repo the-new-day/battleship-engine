@@ -1,7 +1,5 @@
 #include "OrderedStrategy.hpp"
 
-#include <iostream>
-
 namespace Battleship {
 
 void OrderedStrategy::StartGame() {

@@ -3,11 +3,7 @@
 #include "field/CompressedField.hpp"
 #include "ShipHandler.hpp"
 
-#include <cstdint>
 #include <map>
-#include <array>
-#include <unordered_set>
-#include <ctime>
 
 namespace Battleship {
 

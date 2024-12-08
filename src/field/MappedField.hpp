@@ -2,8 +2,6 @@
 
 #include "Field.hpp"
 
-#include <vector>
-#include <utility>
 #include <unordered_set>
 
 namespace Battleship {

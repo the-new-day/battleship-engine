@@ -1,7 +1,5 @@
 #include "MatrixField.hpp"
 
-#include <iostream>
-
 namespace Battleship {
 
 MartixField::MartixField(uint64_t width, uint64_t height) : Field(width, height) {

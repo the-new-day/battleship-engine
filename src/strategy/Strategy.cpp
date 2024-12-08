@@ -2,10 +2,6 @@
 #include "field/Field.hpp"
 #include "field/CompressedField.hpp"
 
-#include <iostream>
-#include <algorithm>
-#include <random>
-
 namespace Battleship {
 
 Strategy::Strategy(uint64_t field_width, 
