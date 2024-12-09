@@ -85,7 +85,7 @@ void HuntingStrategy::MakeNextHuntingShot() {
             }
 
             if (bottom_cell.y < field_height_ - 1
-            && !current_target_shots_.contains({bottom_cell.x, bottom_cell.y - 1})) {
+            && !current_target_shots_.contains({bottom_cell.x, bottom_cell.y + 1})) {
                 potential_targets_.emplace_back(bottom_cell.x, bottom_cell.y + 1);
             }
         }
