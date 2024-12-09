@@ -19,10 +19,7 @@ FieldPoint HuntingStrategy::GetNextShot() {
     }
 
     if (last_shot_result_ == ShotResult::kHit || (!target_cells_.empty() && last_shot_result_ != ShotResult::kKill)) {
-        if (last_shot_result_ == ShotResult::kMiss) {
-            current_target_missed_shots_.insert(last_shot_point_);
-        }
-
+        current_target_shots_.insert(last_shot_point_);
         MakeNextHuntingShot();
     } else {
         MakeNextStrategicShot();
@@ -33,7 +30,7 @@ FieldPoint HuntingStrategy::GetNextShot() {
         --enemy_ships_count_[target_cells_.size()];
         target_cells_.clear();
         potential_targets_.clear();
-        current_target_missed_shots_.clear();
+        current_target_shots_.clear();
     }
 
     return last_shot_point_;
@@ -42,22 +39,22 @@ FieldPoint HuntingStrategy::GetNextShot() {
 void HuntingStrategy::MakeNextHuntingShot() {
     if (target_cells_.size() == 1 && potential_targets_.empty()) {
         if (last_successful_hunt_shot_.x > 0
-        && !current_target_missed_shots_.contains({last_successful_hunt_shot_.x - 1, last_successful_hunt_shot_.y})) {
+        && !current_target_shots_.contains({last_successful_hunt_shot_.x - 1, last_successful_hunt_shot_.y})) {
             potential_targets_.emplace_back(last_successful_hunt_shot_.x - 1, last_successful_hunt_shot_.y);
         }
 
         if (last_successful_hunt_shot_.x < field_width_ - 1
-        && !current_target_missed_shots_.contains({last_successful_hunt_shot_.x + 1, last_successful_hunt_shot_.y})) {
+        && !current_target_shots_.contains({last_successful_hunt_shot_.x + 1, last_successful_hunt_shot_.y})) {
             potential_targets_.emplace_back(last_successful_hunt_shot_.x + 1, last_successful_hunt_shot_.y);
         }
 
         if (last_successful_hunt_shot_.y > 0
-        && !current_target_missed_shots_.contains({last_successful_hunt_shot_.x, last_successful_hunt_shot_.y - 1})) {
+        && !current_target_shots_.contains({last_successful_hunt_shot_.x, last_successful_hunt_shot_.y - 1})) {
             potential_targets_.emplace_back(last_successful_hunt_shot_.x, last_successful_hunt_shot_.y - 1);
         }
 
         if (last_successful_hunt_shot_.y < field_height_ - 1
-        && !current_target_missed_shots_.contains({last_successful_hunt_shot_.x, last_successful_hunt_shot_.y + 1})) {
+        && !current_target_shots_.contains({last_successful_hunt_shot_.x, last_successful_hunt_shot_.y + 1})) {
             potential_targets_.emplace_back(last_successful_hunt_shot_.x, last_successful_hunt_shot_.y + 1);
         }
     } else if (target_cells_.size() > 1) {
@@ -68,12 +65,12 @@ void HuntingStrategy::MakeNextHuntingShot() {
             FieldPoint rightmost_cell = *std::max_element(target_cells_.begin(), target_cells_.end(), cmp);
 
             if (leftmost_cell.x > 0
-            && !current_target_missed_shots_.contains({leftmost_cell.x - 1, leftmost_cell.y})) {
+            && !current_target_shots_.contains({leftmost_cell.x - 1, leftmost_cell.y})) {
                 potential_targets_.emplace_back(leftmost_cell.x - 1, leftmost_cell.y);
             }
 
             if (rightmost_cell.x < field_width_ - 1
-            && !current_target_missed_shots_.contains({rightmost_cell.x + 1, rightmost_cell.y})) {
+            && !current_target_shots_.contains({rightmost_cell.x + 1, rightmost_cell.y})) {
                 potential_targets_.emplace_back(rightmost_cell.x + 1, rightmost_cell.y);
             }
         } else {
@@ -83,12 +80,12 @@ void HuntingStrategy::MakeNextHuntingShot() {
             FieldPoint bottom_cell = *std::max_element(target_cells_.begin(), target_cells_.end(), cmp);
 
             if (top_cell.y > 0
-            && !current_target_missed_shots_.contains({top_cell.x + 1, top_cell.y})) {
+            && !current_target_shots_.contains({top_cell.x, top_cell.y - 1})) {
                 potential_targets_.emplace_back(top_cell.x, top_cell.y - 1);
             }
 
             if (bottom_cell.y < field_height_ - 1
-            && !current_target_missed_shots_.contains({bottom_cell.x + 1, bottom_cell.y})) {
+            && !current_target_shots_.contains({bottom_cell.x, bottom_cell.y - 1})) {
                 potential_targets_.emplace_back(bottom_cell.x, bottom_cell.y + 1);
             }
         }

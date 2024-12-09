@@ -24,7 +24,7 @@ private:
     FieldPoint last_successful_hunt_shot_;
     std::vector<FieldPoint> potential_targets_;
 
-    std::unordered_set<FieldPoint, FieldPointHash> current_target_missed_shots_;
+    std::unordered_set<FieldPoint, FieldPointHash> current_target_shots_;
 
     void MakeNextHuntingShot();
 };
