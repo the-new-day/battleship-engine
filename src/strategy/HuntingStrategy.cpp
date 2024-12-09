@@ -2,15 +2,13 @@
 
 #include <algorithm>
 
-#include <iostream> // TODO: remove
-
 namespace Battleship {
 HuntingStrategy::HuntingStrategy(
     uint64_t field_width, 
     uint64_t field_height, 
-    const std::map<uint8_t, uint64_t>& ship_types, 
-    Field *enemy_field)
-    : Strategy(field_width, field_height, ship_types, enemy_field) {
+    const std::map<uint8_t, uint64_t>& ship_types)
+    : Strategy(field_width, field_height, ship_types)
+    , enemy_field_(CompressedField(field_width, field_height)) {
     target_cells_.reserve(kMaxShipLength);
     potential_targets_.reserve(4);
 }
@@ -40,22 +38,22 @@ FieldPoint HuntingStrategy::GetNextShot() {
 void HuntingStrategy::MakeNextHuntingShot() {
     if (target_cells_.size() == 1 && potential_targets_.empty()) {
         if (last_successful_hunt_shot_.x > 0
-        && !enemy_field_->IsOneAt(last_successful_hunt_shot_.x - 1, last_successful_hunt_shot_.y)) {
+        && !enemy_field_.IsOneAt(last_successful_hunt_shot_.x - 1, last_successful_hunt_shot_.y)) {
             potential_targets_.emplace_back(last_successful_hunt_shot_.x - 1, last_successful_hunt_shot_.y);
         }
 
         if (last_successful_hunt_shot_.x < field_width_ - 1 
-        && !enemy_field_->IsOneAt(last_successful_hunt_shot_.x + 1, last_successful_hunt_shot_.y)) {
+        && !enemy_field_.IsOneAt(last_successful_hunt_shot_.x + 1, last_successful_hunt_shot_.y)) {
             potential_targets_.emplace_back(last_successful_hunt_shot_.x + 1, last_successful_hunt_shot_.y);
         }
 
         if (last_successful_hunt_shot_.y > 0
-        && !enemy_field_->IsOneAt(last_successful_hunt_shot_.x, last_successful_hunt_shot_.y - 1)) {
+        && !enemy_field_.IsOneAt(last_successful_hunt_shot_.x, last_successful_hunt_shot_.y - 1)) {
             potential_targets_.emplace_back(last_successful_hunt_shot_.x, last_successful_hunt_shot_.y - 1);
         }
 
         if (last_successful_hunt_shot_.y < field_height_ - 1 
-        && !enemy_field_->IsOneAt(last_successful_hunt_shot_.x, last_successful_hunt_shot_.y + 1)) {
+        && !enemy_field_.IsOneAt(last_successful_hunt_shot_.x, last_successful_hunt_shot_.y + 1)) {
             potential_targets_.emplace_back(last_successful_hunt_shot_.x, last_successful_hunt_shot_.y + 1);
         }
     } else if (target_cells_.size() > 1) {
@@ -65,11 +63,11 @@ void HuntingStrategy::MakeNextHuntingShot() {
             FieldPoint leftmost_cell = *std::min_element(target_cells_.begin(), target_cells_.end(), cmp);
             FieldPoint rightmost_cell = *std::max_element(target_cells_.begin(), target_cells_.end(), cmp);
 
-            if (leftmost_cell.x > 0 && !enemy_field_->IsOneAt(leftmost_cell.x - 1, leftmost_cell.y)) {
+            if (leftmost_cell.x > 0 && !enemy_field_.IsOneAt(leftmost_cell.x - 1, leftmost_cell.y)) {
                 potential_targets_.emplace_back(leftmost_cell.x - 1, leftmost_cell.y);
             }
 
-            if (rightmost_cell.x < field_width_ - 1 && !enemy_field_->IsOneAt(rightmost_cell.x + 1, rightmost_cell.y)) {
+            if (rightmost_cell.x < field_width_ - 1 && !enemy_field_.IsOneAt(rightmost_cell.x + 1, rightmost_cell.y)) {
                 potential_targets_.emplace_back(rightmost_cell.x + 1, rightmost_cell.y);
             }
         } else {
@@ -78,11 +76,11 @@ void HuntingStrategy::MakeNextHuntingShot() {
             FieldPoint top_cell = *std::min_element(target_cells_.begin(), target_cells_.end(), cmp);
             FieldPoint bottom_cell = *std::max_element(target_cells_.begin(), target_cells_.end(), cmp);
 
-            if (top_cell.y > 0 && !enemy_field_->IsOneAt(top_cell.x, top_cell.y - 1)) {
+            if (top_cell.y > 0 && !enemy_field_.IsOneAt(top_cell.x, top_cell.y - 1)) {
                 potential_targets_.emplace_back(top_cell.x, top_cell.y - 1);
             }
 
-            if (bottom_cell.y < field_height_ - 1 && !enemy_field_->IsOneAt(bottom_cell.x, bottom_cell.y + 1)) {
+            if (bottom_cell.y < field_height_ - 1 && !enemy_field_.IsOneAt(bottom_cell.x, bottom_cell.y + 1)) {
                 potential_targets_.emplace_back(bottom_cell.x, bottom_cell.y + 1);
             }
         }

@@ -11,7 +11,7 @@ void ParityStrategy::MakeNextStrategicShot() {
 
     FieldPoint next_shot = ChooseNextStrategicShot(last_strategic_shot_);
 
-    while (enemy_field_->IsOneAt(next_shot.x, next_shot.y)) {
+    while (enemy_field_.IsOneAt(next_shot.x, next_shot.y)) {
         if (last_strategic_shot_ == next_shot) {
             return;
         }
@@ -50,7 +50,7 @@ void ParityStrategy::UpdateSafeZone() {
         const FieldPoint& cell = target_cells_[0];
         for (uint64_t x = cell.x - (cell.x == 0 ? 0 : 1); x <= cell.x + (cell.x == field_width_ - 1 ? 0 : 1); ++x) {
             for (uint64_t y = cell.y - (cell.y == 0 ? 0 : 1); y <= cell.y + (cell.y == field_height_ - 1 ? 0 : 1); ++y) {
-                enemy_field_->SetBit(x, y);
+                enemy_field_.SetBit(x, y);
             }
         }
 
@@ -72,7 +72,7 @@ void ParityStrategy::UpdateSafeZone() {
         for (uint64_t y = (target_cells_[0].y == 0 ? 0 : target_cells_[0].y - 1); 
              y <= (target_cells_.back().y == field_height_ - 1 ? field_height_ - 1 : target_cells_.back().y + 1);
              ++y) {
-            enemy_field_->SetBit(x, y);
+            enemy_field_.SetBit(x, y);
         }
     }
 }

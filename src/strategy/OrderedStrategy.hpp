@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Strategy.hpp"
-#include "field/Field.hpp"
 
 namespace Battleship {
 

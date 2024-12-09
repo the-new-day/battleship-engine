@@ -99,8 +99,8 @@ bool Battleship::IsFinished() const {
 }
 
 void Battleship::InitStrategy() {
-    ordered_strategy_ = new OrderedStrategy(field_width_.value(), field_height_.value(), ships_count_, enemy_field_);
-    parity_strategy_ = new ParityStrategy(field_width_.value(), field_height_.value(), ships_count_, enemy_field_);
+    ordered_strategy_ = new OrderedStrategy(field_width_.value(), field_height_.value(), ships_count_);
+    parity_strategy_ = new ParityStrategy(field_width_.value(), field_height_.value(), ships_count_);
 
     ChangeStrategy();
 }
