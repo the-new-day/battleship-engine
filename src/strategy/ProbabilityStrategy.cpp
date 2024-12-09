@@ -105,10 +105,10 @@ void ProbabilityStrategy::UpdateEnemyField() {
         enemy_field_.SetBit(cell.x, cell.y);
 
         for (uint64_t y = (cell.y > 0 ? cell.y - 1 : 0 ); 
-             y <= (cell.y < field_height_ ? cell.y + 1 : field_height_ - 1);
+             y <= (cell.y < field_height_ - 1 ? cell.y + 1 : field_height_ - 1);
              ++y) {
             for (uint64_t x = (cell.x > 0 ? cell.x - 1 : 0 ); 
-                 x <= (cell.x < field_width_ ? cell.x + 1 : field_width_ - 1); 
+                 x <= (cell.x < field_width_ - 1 ? cell.x + 1 : field_width_ - 1); 
                  ++x) {
                 probability_map_[y][x] = 0;
             }
