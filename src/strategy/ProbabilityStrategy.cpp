@@ -105,7 +105,7 @@ void ProbabilityStrategy::UpdateEnemyField() {
         enemy_field_.SetBit(cell.x, cell.y);
 
         for (uint64_t y = (cell.y > 0 ? cell.y - 1 : 0 ); 
-             y <= (cell.y < field_height_ ? cell.y + 1 : field_height_ - 1); 
+             y <= (cell.y < field_height_ ? cell.y + 1 : field_height_ - 1);
              ++y) {
             for (uint64_t x = (cell.x > 0 ? cell.x - 1 : 0 ); 
                  x <= (cell.x < field_width_ ? cell.x + 1 : field_width_ - 1); 
@@ -141,14 +141,8 @@ void ProbabilityStrategy::MakeNextStrategicShot() {
         }
     } else {
         enemy_field_.SetBit(last_shot_point_.x, last_shot_point_.y);
+        probability_map_[last_shot_point_.y][last_shot_point_.x] = 0;
         RecalculateMap(last_shot_point_.x, last_shot_point_.y);
-    }
-
-    for (uint64_t y = 0; y < field_height_; ++y) {
-        for (uint64_t x = 0; x < field_width_; ++x) {
-            std::cout << probability_map_[y][x] << ' ';
-        }
-        std::cout << '\n';
     }
 
     last_strategic_shot_ = GetMostLikelyPoint();
