@@ -30,7 +30,6 @@ bool Battleship::LoadFrom(const std::string& path) {
     }
 
     RefreshGame();
-    game_mode_ = GameMode::kSlave;
     ship_handler_ = new ShipHandler();
 
     if (!ship_handler_->LoadFromFile(path)) {
@@ -41,6 +40,7 @@ bool Battleship::LoadFrom(const std::string& path) {
     field_width_ = ship_handler_->GetFieldWidth();
     field_height_ = ship_handler_->GetFieldHeight();
     status_ = BattleshipStatus::kConfigurationDone;
+    game_mode_ = GameMode::kMaster;
 
     for (auto& [size, amount] : ships_count_) {
         amount = ship_handler_->GetShipsCount(size);
@@ -219,10 +219,6 @@ bool Battleship::Start() {
 
     if (!was_loaded_from_file_) {
         SetShipHandler();
-    }
-
-    if (game_mode_ == GameMode::kMaster) {
-        SetMasterConfig();
     }
 
     if (!was_loaded_from_file_ && !ship_handler_->PlaceShips()) {
