@@ -3,7 +3,6 @@
 namespace Battleship {
 
 void OrderedStrategy::StartGame() {
-    is_game_started_ = true;
     last_shot_point_ = FieldPoint{0, 0};
 }
 

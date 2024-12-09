@@ -2,16 +2,18 @@
 
 namespace Battleship {
 
-Strategy::Strategy(uint64_t field_width, 
-                   uint64_t field_height,
-                   const std::map<uint8_t, uint64_t>& ship_types)
-                   : enemy_ships_count_(ship_types)
-                   , field_width_(field_width)
-                   , field_height_(field_height) {}
+Strategy::Strategy(
+    uint64_t field_width, 
+    uint64_t field_height,
+    const std::map<uint8_t, uint64_t>& ship_types)
+    : enemy_ships_count_(ship_types)
+    , field_width_(field_width)
+    , field_height_(field_height) {}
 
 FieldPoint Strategy::MakeNextShot() {
     if (!is_game_started_) {
         StartGame();
+        is_game_started_ = true;
         return last_shot_point_;
     }
 

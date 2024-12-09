@@ -4,6 +4,13 @@
 
 namespace Battleship {
 
+ParityStrategy::ParityStrategy(
+    uint64_t field_width, 
+    uint64_t field_height, 
+    const std::map<uint8_t, uint64_t>& ship_types)
+    : HuntingStrategy(field_width, field_height, ship_types)
+    , enemy_field_(CompressedField(field_width, field_height)) {}
+
 void ParityStrategy::MakeNextStrategicShot() {
     if (last_shot_result_ == ShotResult::kKill) {
         UpdateSafeZone();
@@ -46,18 +53,7 @@ FieldPoint ParityStrategy::ChooseNextStrategicShot(FieldPoint last_shot) {
 }
 
 void ParityStrategy::UpdateSafeZone() {
-    if (target_cells_.size() == 1) {
-        const FieldPoint& cell = target_cells_[0];
-        for (uint64_t x = cell.x - (cell.x == 0 ? 0 : 1); x <= cell.x + (cell.x == field_width_ - 1 ? 0 : 1); ++x) {
-            for (uint64_t y = cell.y - (cell.y == 0 ? 0 : 1); y <= cell.y + (cell.y == field_height_ - 1 ? 0 : 1); ++y) {
-                enemy_field_.SetBit(x, y);
-            }
-        }
-
-        return;
-    }
-
-    bool is_horizontal = target_cells_[0].y == target_cells_[1].y;
+    bool is_horizontal = (target_cells_.size() > 1 && target_cells_[0].y == target_cells_[1].y);
 
     std::sort(
         target_cells_.begin(), 
@@ -78,7 +74,6 @@ void ParityStrategy::UpdateSafeZone() {
 }
 
 void ParityStrategy::StartGame() {
-    is_game_started_ = true;
     last_shot_point_ = {0, 0};
     last_strategic_shot_ = {0, 0};
 }

@@ -22,16 +22,17 @@ public:
     bool EnemyHasShips() const;
 
 protected:
-    uint64_t field_width_;
-    uint64_t field_height_;
+    const uint64_t field_width_;
+    const uint64_t field_height_;
     std::map<uint8_t, uint64_t> enemy_ships_count_;
-
-    bool is_game_started_ = false;
 
     ShotResult last_shot_result_;
     FieldPoint last_shot_point_;
 
     virtual void StartGame() = 0;
+
+private:
+    bool is_game_started_ = false;
 };
 
 } // namespace Battleship
