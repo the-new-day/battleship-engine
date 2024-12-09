@@ -10,6 +10,7 @@ HuntingStrategy::HuntingStrategy(
     : Strategy(field_width, field_height, ship_types) {
     target_cells_.reserve(kMaxShipLength);
     potential_targets_.reserve(4);
+    SetEnemyField();
 }
 
 FieldPoint HuntingStrategy::GetNextShot() {
@@ -39,22 +40,26 @@ FieldPoint HuntingStrategy::GetNextShot() {
 void HuntingStrategy::MakeNextHuntingShot() {
     if (target_cells_.size() == 1 && potential_targets_.empty()) {
         if (last_successful_hunt_shot_.x > 0
-        && !current_target_shots_.contains({last_successful_hunt_shot_.x - 1, last_successful_hunt_shot_.y})) {
+        && !current_target_shots_.contains({last_successful_hunt_shot_.x - 1, last_successful_hunt_shot_.y})
+        && !enemy_field_->IsOneAt(last_successful_hunt_shot_.x - 1, last_successful_hunt_shot_.y)) {
             potential_targets_.emplace_back(last_successful_hunt_shot_.x - 1, last_successful_hunt_shot_.y);
         }
 
         if (last_successful_hunt_shot_.x < field_width_ - 1
-        && !current_target_shots_.contains({last_successful_hunt_shot_.x + 1, last_successful_hunt_shot_.y})) {
+        && !current_target_shots_.contains({last_successful_hunt_shot_.x + 1, last_successful_hunt_shot_.y})
+        && !enemy_field_->IsOneAt(last_successful_hunt_shot_.x + 1, last_successful_hunt_shot_.y)) {
             potential_targets_.emplace_back(last_successful_hunt_shot_.x + 1, last_successful_hunt_shot_.y);
         }
 
         if (last_successful_hunt_shot_.y > 0
-        && !current_target_shots_.contains({last_successful_hunt_shot_.x, last_successful_hunt_shot_.y - 1})) {
+        && !current_target_shots_.contains({last_successful_hunt_shot_.x, last_successful_hunt_shot_.y - 1})
+        && !enemy_field_->IsOneAt(last_successful_hunt_shot_.x, last_successful_hunt_shot_.y - 1)) {
             potential_targets_.emplace_back(last_successful_hunt_shot_.x, last_successful_hunt_shot_.y - 1);
         }
 
         if (last_successful_hunt_shot_.y < field_height_ - 1
-        && !current_target_shots_.contains({last_successful_hunt_shot_.x, last_successful_hunt_shot_.y + 1})) {
+        && !current_target_shots_.contains({last_successful_hunt_shot_.x, last_successful_hunt_shot_.y + 1})
+        && !enemy_field_->IsOneAt(last_successful_hunt_shot_.x, last_successful_hunt_shot_.y + 1)) {
             potential_targets_.emplace_back(last_successful_hunt_shot_.x, last_successful_hunt_shot_.y + 1);
         }
     } else if (target_cells_.size() > 1) {
@@ -65,12 +70,14 @@ void HuntingStrategy::MakeNextHuntingShot() {
             FieldPoint rightmost_cell = *std::max_element(target_cells_.begin(), target_cells_.end(), cmp);
 
             if (leftmost_cell.x > 0
-            && !current_target_shots_.contains({leftmost_cell.x - 1, leftmost_cell.y})) {
+            && !current_target_shots_.contains({leftmost_cell.x - 1, leftmost_cell.y})
+            && !enemy_field_->IsOneAt(leftmost_cell.x - 1, leftmost_cell.y)) {
                 potential_targets_.emplace_back(leftmost_cell.x - 1, leftmost_cell.y);
             }
 
             if (rightmost_cell.x < field_width_ - 1
-            && !current_target_shots_.contains({rightmost_cell.x + 1, rightmost_cell.y})) {
+            && !current_target_shots_.contains({rightmost_cell.x + 1, rightmost_cell.y})
+            && !enemy_field_->IsOneAt(rightmost_cell.x + 1, rightmost_cell.y)) {
                 potential_targets_.emplace_back(rightmost_cell.x + 1, rightmost_cell.y);
             }
         } else {
@@ -80,12 +87,14 @@ void HuntingStrategy::MakeNextHuntingShot() {
             FieldPoint bottom_cell = *std::max_element(target_cells_.begin(), target_cells_.end(), cmp);
 
             if (top_cell.y > 0
-            && !current_target_shots_.contains({top_cell.x, top_cell.y - 1})) {
+            && !current_target_shots_.contains({top_cell.x, top_cell.y - 1})
+            && !enemy_field_->IsOneAt(top_cell.x, top_cell.y - 1)) {
                 potential_targets_.emplace_back(top_cell.x, top_cell.y - 1);
             }
 
             if (bottom_cell.y < field_height_ - 1
-            && !current_target_shots_.contains({bottom_cell.x, bottom_cell.y + 1})) {
+            && !current_target_shots_.contains({bottom_cell.x, bottom_cell.y + 1})
+            && !enemy_field_->IsOneAt(bottom_cell.x, bottom_cell.y + 1)) {
                 potential_targets_.emplace_back(bottom_cell.x, bottom_cell.y + 1);
             }
         }
