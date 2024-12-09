@@ -60,6 +60,8 @@ void ProbabilityStrategy::CalculateFullMapForShip(uint8_t ship_size) {
 }
 
 void ProbabilityStrategy::StartGame() {
+    SetEnemyField();
+    
     probability_map_.resize(field_height_);
     for (auto& row : probability_map_) {
         row.resize(field_width_);
@@ -67,7 +69,6 @@ void ProbabilityStrategy::StartGame() {
 
     CalculateFullMap();
     last_shot_point_ = GetMostLikelyPoint();
-    SetEnemyField();
 }
 
 void ProbabilityStrategy::RecalculateMap(uint64_t x, uint64_t y) {

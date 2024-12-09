@@ -1,7 +1,5 @@
 #pragma once
 
-#include "field/Field.hpp"
-
 #include "strategy/Strategy.hpp"
 #include "strategy/OrderedStrategy.hpp"
 #include "strategy/ParityStrategy.hpp"
