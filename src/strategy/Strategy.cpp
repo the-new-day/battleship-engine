@@ -10,6 +10,10 @@ Strategy::Strategy(
     , field_width_(field_width)
     , field_height_(field_height) {}
 
+Strategy::~Strategy() {
+    delete enemy_field_;
+}
+
 FieldPoint Strategy::MakeNextShot() {
     if (!is_game_started_) {
         StartGame();
@@ -39,6 +43,29 @@ bool Strategy::EnemyHasShips() const {
     }
 
     return false;
+}
+
+void Strategy::SetEnemyField() {
+    if (static_cast<double>(field_width_) / kMaxMatrixFieldArea * field_height_ <= 1) {
+        enemy_field_ = new MartixField(field_width_, field_height_);
+        return;
+    }
+
+    double density = 0;
+
+    for (uint8_t i = 1; i <= kMaxShipLength; ++i) {
+        density += static_cast<double>(enemy_ships_count_[i]) / field_width_;
+    }
+
+    density /= field_height_;
+
+    if (density < 0.1) {
+        enemy_field_ = new MappedField(field_width_, field_height_);
+    } else if (density < 0.75) {
+        enemy_field_ = new CompressedField(field_width_, field_height_);
+    } else {
+        enemy_field_ = new CompressedDenseField(field_width_, field_height_);
+    }
 }
 
 } // namespace Battleship

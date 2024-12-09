@@ -10,6 +10,9 @@
 
 namespace Battleship {
 
+// Max area of a field to be stored in a simple binary matrix (30 MB)
+const uint64_t kMaxMatrixFieldArea = 251'658'240;
+
 enum class ShotResult {
     kMiss,
     kHit,

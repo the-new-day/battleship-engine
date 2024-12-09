@@ -214,7 +214,6 @@ bool Battleship::Start() {
     }
 
     RefreshGame();
-    SetEnemyField();
     InitStrategy();
 
     if (!was_loaded_from_file_) {
@@ -274,7 +273,6 @@ void Battleship::RefreshGame() {
     delete ordered_strategy_;
     delete parity_strategy_;
     delete probability_strategy_;
-    delete enemy_field_;
 
     if (!was_loaded_from_file_) {
         delete ship_handler_;
@@ -284,7 +282,6 @@ void Battleship::RefreshGame() {
     ordered_strategy_ = nullptr;
     parity_strategy_ = nullptr;
     probability_strategy_ = nullptr;
-    enemy_field_ = nullptr;
 }
 
 void Battleship::SetMasterConfig() {
@@ -296,10 +293,6 @@ void Battleship::SetMasterConfig() {
 
 void Battleship::SetShipHandler() {
     ship_handler_ = new ShipHandler(field_width_.value(), field_height_.value(), ships_count_);
-}
-
-void Battleship::SetEnemyField() {
-    enemy_field_ = new CompressedField(field_width_.value(), field_height_.value());
 }
 
 } // namespace Battleship

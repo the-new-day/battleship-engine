@@ -1,7 +1,6 @@
 #pragma once
 
 #include "HuntingStrategy.hpp"
-#include "field/CompressedField.hpp"
 
 #include <vector>
 
@@ -15,7 +14,6 @@ public:
 
 private:
     std::vector<std::vector<uint64_t>> probability_map_;
-    CompressedField enemy_field_;
 
     bool IsPossibleToPlaceShip(uint64_t x, uint64_t y, uint8_t ship_size, bool is_horizontal) const;
 

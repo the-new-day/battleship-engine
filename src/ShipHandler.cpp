@@ -11,9 +11,6 @@
 
 namespace Battleship {
 
-// Max area of a field to be stored in a simple binary matrix (30 MB)
-const uint64_t kMaxMatrixFieldArea = 251'658'240;
-
 ShipHandler::ShipHandler(uint64_t field_width, uint64_t field_height, const std::map<uint8_t, uint64_t>& ships_count) 
     : field_width_(field_width)
     , field_height_(field_height)

@@ -104,8 +104,6 @@ private:
     ParityStrategy* parity_strategy_ = nullptr;
     ProbabilityStrategy* probability_strategy_ = nullptr;
 
-    Field* enemy_field_ = nullptr;
-
     std::optional<uint64_t> field_width_;
     std::optional<uint64_t> field_height_;
 
@@ -116,7 +114,6 @@ private:
     void InitStrategy();
     void ChangeStrategy();
     void SetShipHandler();
-    void SetEnemyField();
     void RefreshGame();
 
     void SetMasterConfig();

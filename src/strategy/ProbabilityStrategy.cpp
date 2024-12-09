@@ -6,13 +6,7 @@ ProbabilityStrategy::ProbabilityStrategy(
     uint64_t field_width, 
     uint64_t field_height, 
     const std::map<uint8_t, uint64_t>& ship_types)
-    : HuntingStrategy(field_width, field_height, ship_types)
-    , enemy_field_(CompressedField(field_width, field_height)) {
-    probability_map_.resize(field_height);
-    for (auto& row : probability_map_) {
-        row.resize(field_width);
-    }
-}
+    : HuntingStrategy(field_width, field_height, ship_types) {}
 
 bool ProbabilityStrategy::IsPossibleToPlaceShip(uint64_t x, uint64_t y, uint8_t ship_size, bool is_horizontal) const {
     if (is_horizontal && x + ship_size > field_width_
@@ -22,7 +16,7 @@ bool ProbabilityStrategy::IsPossibleToPlaceShip(uint64_t x, uint64_t y, uint8_t 
 
     if (is_horizontal) {
         for (uint64_t i = (x == 0 ? 0 : x - 1); i <= x + ship_size; ++i) {
-            if (enemy_field_.IsOneAt(i, y + 1) || enemy_field_.IsOneAt(i, y) || enemy_field_.IsOneAt(i, y - 1)) {
+            if (enemy_field_->IsOneAt(i, y + 1) || enemy_field_->IsOneAt(i, y) || enemy_field_->IsOneAt(i, y - 1)) {
                 return false;
             }
         }
@@ -31,7 +25,7 @@ bool ProbabilityStrategy::IsPossibleToPlaceShip(uint64_t x, uint64_t y, uint8_t 
     }
 
     for (uint64_t i = (y == 0 ? 0 : y - 1); i <= y + ship_size; ++i) {
-        if (enemy_field_.IsOneAt(x + 1, i) || enemy_field_.IsOneAt(x, i) || enemy_field_.IsOneAt(x - 1, i)) {
+        if (enemy_field_->IsOneAt(x + 1, i) || enemy_field_->IsOneAt(x, i) || enemy_field_->IsOneAt(x - 1, i)) {
             return false;
         }
     }
@@ -66,8 +60,14 @@ void ProbabilityStrategy::CalculateFullMapForShip(uint8_t ship_size) {
 }
 
 void ProbabilityStrategy::StartGame() {
+    probability_map_.resize(field_height_);
+    for (auto& row : probability_map_) {
+        row.resize(field_width_);
+    }
+
     CalculateFullMap();
     last_shot_point_ = GetMostLikelyPoint();
+    SetEnemyField();
 }
 
 void ProbabilityStrategy::RecalculateMap(uint64_t x, uint64_t y) {
@@ -102,7 +102,7 @@ void ProbabilityStrategy::RecalculateMapForShip(uint64_t x, uint64_t y, uint8_t 
 
 void ProbabilityStrategy::UpdateEnemyField() {
     for (const auto& cell : target_cells_) {
-        enemy_field_.SetBit(cell.x, cell.y);
+        enemy_field_->SetBit(cell.x, cell.y);
 
         for (uint64_t y = (cell.y > 0 ? cell.y - 1 : 0 ); 
              y <= (cell.y < field_height_ - 1 ? cell.y + 1 : field_height_ - 1);
@@ -140,7 +140,7 @@ void ProbabilityStrategy::MakeNextStrategicShot() {
             RecalculateMap(cell.x, cell.y);
         }
     } else {
-        enemy_field_.SetBit(last_shot_point_.x, last_shot_point_.y);
+        enemy_field_->SetBit(last_shot_point_.x, last_shot_point_.y);
         probability_map_[last_shot_point_.y][last_shot_point_.x] = 0;
         RecalculateMap(last_shot_point_.x, last_shot_point_.y);
     }

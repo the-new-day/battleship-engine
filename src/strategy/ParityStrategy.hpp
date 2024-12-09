@@ -1,7 +1,6 @@
 #pragma once
 
 #include "HuntingStrategy.hpp"
-#include "field/CompressedField.hpp"
 
 namespace Battleship {
 
@@ -13,7 +12,6 @@ public:
 
 private:
     bool was_parity_changed_ = false;
-    CompressedField enemy_field_;
 
     void StartGame() override;
 
