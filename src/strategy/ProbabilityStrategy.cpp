@@ -80,7 +80,7 @@ void ProbabilityStrategy::RecalculateMap(uint64_t x, uint64_t y) {
 
 void ProbabilityStrategy::RecalculateMapForShip(uint64_t x, uint64_t y, uint8_t ship_size) {
     for (uint64_t i = (x > ship_size ? x - ship_size : 0); i <= x; ++i) {
-        if (!IsPossibleToPlaceShip(i, y, ship_size, true)) {
+        if (i < field_width_ - ship_size && !IsPossibleToPlaceShip(i, y, ship_size, true)) {
             for (uint8_t j = 0; j < ship_size; ++j) {
                 if (probability_map_[y][i + j] > 0) {
                     probability_map_[y][i + j] -= 1;

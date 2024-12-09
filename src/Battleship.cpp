@@ -3,6 +3,8 @@
 
 namespace Battleship {
 
+const uint64_t kMaxProbabilityStrategySize = 1000000;
+
 Battleship::Battleship() {
     for (uint8_t i = 1; i <= kMaxShipLength; ++i) {
         ships_count_[i] = 0;
@@ -114,8 +116,11 @@ void Battleship::ChangeStrategy() {
     } else if (strategy_type_ == StrategyType::kProbability) {
         strategy_ = probability_strategy_;
     } else if (strategy_type_ == StrategyType::kCustom) {
-        strategy_ = probability_strategy_;
-        // TODO:
+        if (static_cast<double>(field_width_.value()) / kMaxProbabilityStrategySize * field_height_.value() <= 1) {
+            strategy_ = probability_strategy_;
+        } else {
+            strategy_ = parity_strategy_;
+        }
     }
 }
 
