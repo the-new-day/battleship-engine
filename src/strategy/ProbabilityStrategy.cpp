@@ -8,7 +8,11 @@ ProbabilityStrategy::ProbabilityStrategy(
     uint64_t field_width, 
     uint64_t field_height, 
     const std::map<uint8_t, uint64_t>& ship_types)
-    : HuntingStrategy(field_width, field_height, ship_types) {}
+    : HuntingStrategy(field_width, field_height, ship_types) {
+    for (const auto& [size, amount] : ship_types) {
+        real_enemy_ships_count_[size - 1] = amount;
+    }
+}
 
 bool ProbabilityStrategy::IsPossibleToPlaceShip(uint64_t x, uint64_t y, uint8_t ship_size, bool is_horizontal) const {
     if (is_horizontal && x + ship_size > field_width_
@@ -36,7 +40,7 @@ bool ProbabilityStrategy::IsPossibleToPlaceShip(uint64_t x, uint64_t y, uint8_t 
 }
 
 void ProbabilityStrategy::CalculateFullMap() {
-    for (uint8_t i = 0; i < kMaxShipLength; ++i) {
+    for (uint8_t i = 0; i < real_enemy_ships_count_.size(); ++i) {
         if (real_enemy_ships_count_[i] > 0) {
             CalculateFullMapForShip(i + 1);
         }
@@ -74,7 +78,7 @@ void ProbabilityStrategy::StartGame() {
 }
 
 void ProbabilityStrategy::RecalculateMap(uint64_t x, uint64_t y) {
-    for (uint8_t i = 0; i < kMaxShipLength; ++i) {
+    for (uint8_t i = 0; i < real_enemy_ships_count_.size(); ++i) {
         if (real_enemy_ships_count_[i] > 0) {
             RecalculateMapForShip(x, y, i + 1);
         }
