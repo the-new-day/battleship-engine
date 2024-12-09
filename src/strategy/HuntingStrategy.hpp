@@ -2,6 +2,8 @@
 
 #include "Strategy.hpp"
 
+#include <unordered_set>
+
 namespace Battleship {
 
 class HuntingStrategy : public Strategy {
@@ -21,6 +23,8 @@ protected:
 private:
     FieldPoint last_successful_hunt_shot_;
     std::vector<FieldPoint> potential_targets_;
+
+    std::unordered_set<FieldPoint, FieldPointHash> current_target_missed_shots_;
 
     void MakeNextHuntingShot();
 };

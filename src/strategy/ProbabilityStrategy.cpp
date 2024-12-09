@@ -1,5 +1,5 @@
 #include "ProbabilityStrategy.hpp"
-
+#include <iostream>
 namespace Battleship {
 
 ProbabilityStrategy::ProbabilityStrategy(
@@ -103,7 +103,16 @@ void ProbabilityStrategy::RecalculateMapForShip(uint64_t x, uint64_t y, uint8_t 
 void ProbabilityStrategy::UpdateEnemyField() {
     for (const auto& cell : target_cells_) {
         enemy_field_.SetBit(cell.x, cell.y);
-        probability_map_[cell.y][cell.x] = 0;
+
+        for (uint64_t y = (cell.y > 0 ? cell.y - 1 : 0 ); 
+             y <= (cell.y < field_height_ ? cell.y + 1 : field_height_ - 1); 
+             ++y) {
+            for (uint64_t x = (cell.x > 0 ? cell.x - 1 : 0 ); 
+                 x <= (cell.x < field_width_ ? cell.x + 1 : field_width_ - 1); 
+                 ++x) {
+                probability_map_[y][x] = 0;
+            }
+        }
     }
 }
 
@@ -133,6 +142,13 @@ void ProbabilityStrategy::MakeNextStrategicShot() {
     } else {
         enemy_field_.SetBit(last_shot_point_.x, last_shot_point_.y);
         RecalculateMap(last_shot_point_.x, last_shot_point_.y);
+    }
+
+    for (uint64_t y = 0; y < field_height_; ++y) {
+        for (uint64_t x = 0; x < field_width_; ++x) {
+            std::cout << probability_map_[y][x] << ' ';
+        }
+        std::cout << '\n';
     }
 
     last_strategic_shot_ = GetMostLikelyPoint();
