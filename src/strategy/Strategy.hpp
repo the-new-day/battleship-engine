@@ -7,7 +7,7 @@
 
 #include "ShipHandler.hpp"
 
-#include <map>
+#include <array>
 
 namespace Battleship {
 
@@ -32,7 +32,7 @@ public:
 protected:
     const uint64_t field_width_;
     const uint64_t field_height_;
-    std::map<uint8_t, uint64_t> enemy_ships_count_;
+    std::array<uint64_t, kMaxShipLength - 1> enemy_ships_count_;
 
     ShotResult last_shot_result_;
     FieldPoint last_shot_point_;

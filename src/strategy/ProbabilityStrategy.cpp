@@ -34,9 +34,9 @@ bool ProbabilityStrategy::IsPossibleToPlaceShip(uint64_t x, uint64_t y, uint8_t 
 }
 
 void ProbabilityStrategy::CalculateFullMap() {
-    for (const auto& [size, amount] : enemy_ships_count_) {
-        if (amount > 0) {
-            CalculateFullMapForShip(size);
+    for (uint8_t i = 0; i < real_enemy_ships_count_.size(); ++i) {
+        if (real_enemy_ships_count_[i] > 0) {
+            CalculateFullMapForShip(i + 1);
         }
     }
 }
@@ -72,9 +72,9 @@ void ProbabilityStrategy::StartGame() {
 }
 
 void ProbabilityStrategy::RecalculateMap(uint64_t x, uint64_t y) {
-    for (const auto& [size, amount] : enemy_ships_count_) {
-        if (amount > 0) {
-            RecalculateMapForShip(x, y, size);
+    for (uint8_t i = 0; i < real_enemy_ships_count_.size(); ++i) {
+        if (real_enemy_ships_count_[i] > 0) {
+            RecalculateMapForShip(x, y, i + 1);
         }
     }
 }

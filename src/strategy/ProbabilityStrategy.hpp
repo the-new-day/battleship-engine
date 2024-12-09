@@ -3,6 +3,7 @@
 #include "HuntingStrategy.hpp"
 
 #include <vector>
+#include <array>
 
 namespace Battleship {
 
@@ -14,6 +15,7 @@ public:
 
 private:
     std::vector<std::vector<uint64_t>> probability_map_;
+    std::array<uint64_t, kMaxShipLength - 1> real_enemy_ships_count_;
 
     bool IsPossibleToPlaceShip(uint64_t x, uint64_t y, uint8_t ship_size, bool is_horizontal) const;
 

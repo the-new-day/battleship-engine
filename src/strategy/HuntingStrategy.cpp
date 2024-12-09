@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include <iostream>
+
 namespace Battleship {
 HuntingStrategy::HuntingStrategy(
     uint64_t field_width, 
@@ -28,7 +30,6 @@ FieldPoint HuntingStrategy::GetNextShot() {
     }
 
     if (last_shot_result_ == ShotResult::kKill) {
-        --enemy_ships_count_[target_cells_.size()];
         target_cells_.clear();
         potential_targets_.clear();
         current_target_shots_.clear();
