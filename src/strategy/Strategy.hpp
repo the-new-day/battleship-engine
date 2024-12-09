@@ -32,7 +32,7 @@ public:
 protected:
     const uint64_t field_width_;
     const uint64_t field_height_;
-    std::array<uint64_t, kMaxShipLength - 1> enemy_ships_count_;
+    std::array<uint64_t, kMaxShipLength> enemy_ships_count_;
 
     ShotResult last_shot_result_;
     FieldPoint last_shot_point_;

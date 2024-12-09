@@ -1,5 +1,7 @@
 #include "ProbabilityStrategy.hpp"
+
 #include <iostream>
+
 namespace Battleship {
 
 ProbabilityStrategy::ProbabilityStrategy(
@@ -34,7 +36,7 @@ bool ProbabilityStrategy::IsPossibleToPlaceShip(uint64_t x, uint64_t y, uint8_t 
 }
 
 void ProbabilityStrategy::CalculateFullMap() {
-    for (uint8_t i = 0; i < real_enemy_ships_count_.size(); ++i) {
+    for (uint8_t i = 0; i < kMaxShipLength; ++i) {
         if (real_enemy_ships_count_[i] > 0) {
             CalculateFullMapForShip(i + 1);
         }
@@ -72,7 +74,7 @@ void ProbabilityStrategy::StartGame() {
 }
 
 void ProbabilityStrategy::RecalculateMap(uint64_t x, uint64_t y) {
-    for (uint8_t i = 0; i < real_enemy_ships_count_.size(); ++i) {
+    for (uint8_t i = 0; i < kMaxShipLength; ++i) {
         if (real_enemy_ships_count_[i] > 0) {
             RecalculateMapForShip(x, y, i + 1);
         }
