@@ -140,6 +140,11 @@ FieldPoint ProbabilityStrategy::GetMostLikelyPoint() const {
 }
 
 void ProbabilityStrategy::MakeNextStrategicShot() {
+    HandleLastShot();
+    last_strategic_shot_ = GetMostLikelyPoint();
+}
+
+void ProbabilityStrategy::HandleLastShot() {
     if (last_shot_result_ == ShotResult::kKill) {
         UpdateEnemyField();
 
@@ -151,8 +156,6 @@ void ProbabilityStrategy::MakeNextStrategicShot() {
         probability_map_[last_shot_point_.y][last_shot_point_.x] = 0;
         RecalculateMap(last_shot_point_.x, last_shot_point_.y);
     }
-
-    last_strategic_shot_ = GetMostLikelyPoint();
 }
 
 } // namespace Battleship

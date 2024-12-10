@@ -31,6 +31,8 @@ private:
 
     void MakeNextStrategicShot() override;
     void StartGame() override;
+
+    void HandleLastShot();
 };
     
 } // namespace Battleship
