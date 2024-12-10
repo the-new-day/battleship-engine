@@ -33,7 +33,7 @@ bool Battleship::LoadFrom(const std::string& path) {
     ship_handler_ = new ShipHandler();
 
     if (!ship_handler_->LoadFromFile(path)) {
-        status_ == BattleshipStatus::kWrongParameter;
+        status_ = BattleshipStatus::kWrongParameter;
         return false;
     }
 

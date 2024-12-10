@@ -17,7 +17,7 @@ public:
              uint64_t field_height,
              const std::map<uint8_t, uint64_t>& ship_types);
 
-    ~Strategy();
+    virtual ~Strategy();
     Strategy(const Strategy& other) = delete;
     Strategy& operator=(const Strategy& other) = delete;
 
