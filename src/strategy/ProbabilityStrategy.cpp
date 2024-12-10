@@ -1,7 +1,5 @@
 #include "ProbabilityStrategy.hpp"
 
-#include <iostream>
-
 namespace Battleship {
 
 ProbabilityStrategy::ProbabilityStrategy(

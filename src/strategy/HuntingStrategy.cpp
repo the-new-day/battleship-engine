@@ -2,8 +2,6 @@
 
 #include <algorithm>
 
-#include <iostream>
-
 namespace Battleship {
 HuntingStrategy::HuntingStrategy(
     uint64_t field_width, 
