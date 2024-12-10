@@ -338,7 +338,7 @@ uint64_t ShipHandler::GetFieldHeight() const {
 }
 
 uint64_t ShipHandler::GetShipsCount(uint8_t ship_size) const {
-    return ships_count_.at(ship_size);
+    return ships_count_.contains(ship_size) ? ships_count_.at(ship_size) : 0;
 }
 
 } // namespace Battleship
