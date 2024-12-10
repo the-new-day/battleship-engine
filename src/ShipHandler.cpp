@@ -141,10 +141,7 @@ ShotResult ShipHandler::ProcessShot(uint64_t x, uint64_t y) {
     FindShipCells(x, y, ship_cells);
     
     if (IsHitFatal(x, y, ship_cells)) {
-        for (const FieldPoint& cell : ship_cells) {
-            hit_points_.erase(cell);
-        }
-
+        hit_points_.clear();
         --ships_count_[ship_cells.size()];
         result = ShotResult::kKill;
     } else {
