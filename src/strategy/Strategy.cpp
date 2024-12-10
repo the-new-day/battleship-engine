@@ -9,7 +9,7 @@ Strategy::Strategy(
     : field_width_(field_width)
     , field_height_(field_height) {
     for (uint8_t i = 0; i < kMaxShipLength; ++i) {
-        enemy_ships_count_[i] = ship_types.at(i + 1);
+        enemy_ships_count_[i] = ship_types.contains(i + 1) ? ship_types.at(i + 1) : 0;
     }
 }
 

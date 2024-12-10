@@ -13,8 +13,8 @@ ProbabilityStrategy::ProbabilityStrategy(
 }
 
 bool ProbabilityStrategy::IsPossibleToPlaceShip(uint64_t x, uint64_t y, uint8_t ship_size, bool is_horizontal) const {
-    if (is_horizontal && x + ship_size > field_width_
-    || !is_horizontal && y + ship_size > field_height_) {
+    if ((is_horizontal && x + ship_size > field_width_)
+    || (!is_horizontal && y + ship_size > field_height_)) {
         return false;
     }
 

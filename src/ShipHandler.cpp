@@ -267,8 +267,8 @@ void ShipHandler::SetField() {
 
     double density = 0;
 
-    for (uint8_t i = 0; i < kMaxShipLength; ++i) {
-        density += static_cast<double>(ships_count_[i]) / field_width_;
+    for (uint8_t i = 1; i <= kMaxShipLength; ++i) {
+        density += static_cast<double>(GetShipsCount(i)) / field_width_;
     }
 
     density /= field_height_;
