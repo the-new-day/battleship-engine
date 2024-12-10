@@ -7,3 +7,5 @@ add_library(strategy
 
 target_link_libraries(strategy PRIVATE field)
 target_include_directories(strategy PUBLIC ${PROJECT_SOURCE_DIR}/src)
+
+target_compile_options(strategy PRIVATE -Wall -Wextra -Wpedantic)

@@ -5,3 +5,5 @@ add_library(field
     CompressedDenseField.cpp
     MappedField.cpp
     RleBlock.cpp)
+
+target_compile_options(field PRIVATE -Wall -Wextra -Wpedantic)

@@ -48,10 +48,10 @@ void RleBlock::SetBitAt(uint64_t x, uint64_t y, bool to_one) {
             continue;
         }
 
-        if (starts_with_zero_ && is_odd_block && !to_one
-        || starts_with_zero_ && !is_odd_block && to_one
-        || !starts_with_zero_ && is_odd_block && to_one
-        || !starts_with_zero_ && !is_odd_block && !to_one) {
+        if ((starts_with_zero_ && is_odd_block && !to_one)
+        || (starts_with_zero_ && !is_odd_block && to_one)
+        || (!starts_with_zero_ && is_odd_block && to_one)
+        || (!starts_with_zero_ && !is_odd_block && !to_one)) {
             return;
         }
 
