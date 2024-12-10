@@ -79,7 +79,7 @@ bool ConsoleApi::ParseSet(std::string_view cmd) {
         }
     } else if (parameter == "count") {
         std::string_view ship_type_str = value_str.substr(0, value_str.find(' '));
-        auto ship_size = ParseNumber<uint8_t>(ship_type_str);
+        std::optional<uint8_t> ship_size = ParseNumber<uint8_t>(ship_type_str);
 
         if (!ship_size.has_value() || ship_size == 0 || ship_size > kMaxShipLength) {
             return false;
@@ -150,14 +150,14 @@ bool ConsoleApi::ParseGet(std::string_view cmd) {
     parameter = parameter.substr(0, parameter.find(' '));
 
     if (parameter == "width") {
-        auto width = game_.GetWidth();
+        std::optional<uint64_t> width = game_.GetWidth();
         if (!width.has_value()) {
             return false;
         }
 
         std::cout << width.value();
     } else if (parameter == "height") {
-        auto height = game_.GetHeight();
+        std::optional<uint64_t> height = game_.GetHeight();
         if (!height.has_value()) {
             return false;
         }
@@ -165,7 +165,7 @@ bool ConsoleApi::ParseGet(std::string_view cmd) {
         std::cout << height.value();
     } else if (parameter == "count") {
         std::string_view value_str = cmd.substr(parameter.length() + 5);
-        auto ship_size = ParseNumber<uint8_t>(value_str);
+        std::optional<uint8_t> ship_size = ParseNumber<uint8_t>(value_str);
 
         if (!ship_size.has_value() || ship_size == 0 || ship_size > kMaxShipLength) {
             return false;
@@ -185,7 +185,7 @@ bool ConsoleApi::HandleShot(std::string_view cmd) {
     }
 
     if (cmd == "shot") {
-        auto point = game_.MakeNextShot();
+        std::optional<FieldPoint> point = game_.MakeNextShot();
         if (!point.has_value()) {
             return false;
         }
@@ -202,8 +202,8 @@ bool ConsoleApi::HandleShot(std::string_view cmd) {
     std::string_view x_str = cmd.substr(0, cmd.find(' '));
     std::string_view y_str = cmd.substr(cmd.find(' ') + 1);
 
-    auto x = ParseNumber<uint64_t>(x_str);
-    auto y = ParseNumber<uint64_t>(y_str);
+    std::optional<uint64_t> x = ParseNumber<uint64_t>(x_str);
+    std::optional<uint64_t> y = ParseNumber<uint64_t>(y_str);
 
     if (!x.has_value() || !y.has_value()) {
         return false;
