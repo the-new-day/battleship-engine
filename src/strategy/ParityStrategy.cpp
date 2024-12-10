@@ -4,12 +4,6 @@
 
 namespace Battleship {
 
-ParityStrategy::ParityStrategy(
-    uint64_t field_width, 
-    uint64_t field_height, 
-    const std::map<uint8_t, uint64_t>& ship_types)
-    : HuntingStrategy(field_width, field_height, ship_types) {}
-
 void ParityStrategy::MakeNextStrategicShot() {
     if (last_shot_result_ == ShotResult::kKill) {
         UpdateSafeZone();
