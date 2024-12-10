@@ -65,7 +65,7 @@ void Strategy::SetEnemyField() {
 
     double density = 0;
 
-    for (uint8_t i = 1; i <= kMaxShipLength; ++i) {
+    for (uint8_t i = 0; i < kMaxShipLength; ++i) {
         density += static_cast<double>(enemy_ships_count_[i]) / field_width_;
     }
 
