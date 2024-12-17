@@ -243,7 +243,7 @@ bool ConsoleApi::HandleStop(std::string_view cmd) {
 }
 
 bool ConsoleApi::HandleLoad(std::string_view cmd) {
-    if (cmd.find(' ') == std::string_view::npos) {
+    if (!cmd.contains(' ')) {
         return false;
     }
 
@@ -259,7 +259,7 @@ bool ConsoleApi::HandleLoad(std::string_view cmd) {
 }
 
 bool ConsoleApi::HandleDump(std::string_view cmd) {
-    if (cmd.find(' ') == std::string_view::npos) {
+    if (!cmd.contains(' ')) {
         return false;
     }
 
