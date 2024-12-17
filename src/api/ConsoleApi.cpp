@@ -243,7 +243,13 @@ bool ConsoleApi::HandleStop(std::string_view cmd) {
 }
 
 bool ConsoleApi::HandleLoad(std::string_view cmd) {
-    if (!game_.LoadFrom(std::string(cmd.substr(5)))) {
+    if (cmd.find(' ') == std::string_view::npos) {
+        return false;
+    }
+
+    std::string filename(cmd.substr(5));
+
+    if (!game_.LoadFrom(filename)) {
         return false;
     }
 
@@ -253,7 +259,13 @@ bool ConsoleApi::HandleLoad(std::string_view cmd) {
 }
 
 bool ConsoleApi::HandleDump(std::string_view cmd) {
-    if (!is_game_created_ || !game_.Dump(std::string(cmd.substr(5)))) {
+    if (cmd.find(' ') == std::string_view::npos) {
+        return false;
+    }
+
+    std::string filename(cmd.substr(5));
+
+    if (!is_game_created_ || !game_.Dump(filename)) {
         return false;
     }
 
