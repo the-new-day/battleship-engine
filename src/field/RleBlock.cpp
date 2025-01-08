@@ -1,5 +1,7 @@
 #include "RleBlock.hpp"
 
+#include <cstddef>
+
 namespace Battleship {
 
 RleBlock::RleBlock(uint64_t width, uint64_t height) : width_(width), height_(height) {

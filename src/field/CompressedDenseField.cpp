@@ -1,5 +1,7 @@
 #include "CompressedDenseField.hpp"
 
+#include <cstddef>
+
 namespace Battleship {
 
 CompressedDenseField::CompressedDenseField(uint64_t width, uint64_t height) : Field(width, height) {

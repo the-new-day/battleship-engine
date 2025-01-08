@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <string>
 #include <fstream>
+#include <cstddef>
 
 namespace Battleship {
 
