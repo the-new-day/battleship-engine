@@ -6,7 +6,7 @@
 namespace Battleship {
 
 ConsoleApi::ConsoleApi(Battleship& game) : Api(game) {
-    commands = {
+    commands_ = {
         {"ping", [this](std::string_view){ std::cout << "pong"; return true; }},
         {"exit", [this](std::string_view){ std::cout << "ok"; return false; }},
         {"start", [this](std::string_view cmd){ return HandleStart(cmd); }},
@@ -34,12 +34,12 @@ void ConsoleApi::Start() {
         std::string_view command_name(command);
         command_name = command_name.substr(0, command_name.find(' '));
 
-        if (!commands.contains(command_name)) {
+        if (!commands_.contains(command_name)) {
             std::cout << "unknown command\n";
             continue;
         }
 
-        if (!commands.at(command_name)(command)) {
+        if (!commands_.at(command_name)(command)) {
             if (command_name == "exit") {
                 break;
             }

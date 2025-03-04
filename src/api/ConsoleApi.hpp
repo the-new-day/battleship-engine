@@ -28,7 +28,7 @@ private:
     bool HandleLoad(std::string_view cmd);
     bool HandleDump(std::string_view cmd);
 
-    std::map<std::string_view, std::function<bool(std::string_view)>> commands;
+    std::map<std::string_view, std::function<bool(std::string_view)>> commands_;
 };
     
 } // namespace Battleship
