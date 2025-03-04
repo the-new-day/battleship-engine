@@ -18,6 +18,10 @@ ShipHandler::ShipHandler(uint64_t field_width, uint64_t field_height, const std:
     SetField();
 }
 
+ShipHandler::~ShipHandler() {
+    delete field_;
+}
+
 bool ShipHandler::LoadFromFile(const std::string& filename) {
     std::ifstream file(filename);
     

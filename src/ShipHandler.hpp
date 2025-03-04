@@ -27,6 +27,7 @@ class ShipHandler {
 public:
     ShipHandler(uint64_t field_width, uint64_t field_height, const std::map<uint8_t, uint64_t>& ships_count);
     ShipHandler() = default;
+    ~ShipHandler();
 
     uint64_t GetFieldWidth() const;
     uint64_t GetFieldHeight() const;
@@ -50,7 +51,7 @@ private:
     std::map<uint8_t, uint64_t> ships_count_;
     std::unordered_set<FieldPoint, FieldPointHash> hit_points_;
 
-    Field* field_;
+    Field* field_ = nullptr;
 
     bool IsHitFatal(uint64_t x, uint64_t y, const std::vector<FieldPoint>& ship_cells) const;
     bool IsShipAt(uint64_t x, uint64_t y) const;
