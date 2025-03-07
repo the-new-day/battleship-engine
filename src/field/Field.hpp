@@ -27,6 +27,9 @@ class Field {
 public:
     Field(uint64_t width, uint64_t height) : width_(width), height_(height) {};
     virtual ~Field() = default;
+    
+    Field(const Field&) = delete;
+    Field& operator=(const Field&) = delete;
 
     virtual void SetBit(uint64_t x, uint64_t y) = 0;
     virtual void RemoveBit(uint64_t x, uint64_t y) = 0;

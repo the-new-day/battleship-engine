@@ -26,7 +26,11 @@ const size_t kMaxShipLength = 4;
 class ShipHandler {
 public:
     ShipHandler(uint64_t field_width, uint64_t field_height, const std::map<uint8_t, uint64_t>& ships_count);
+
     ShipHandler() = default;
+    ShipHandler(const ShipHandler&) = delete;
+
+    ShipHandler& operator=(const ShipHandler&) = delete;
     ~ShipHandler();
 
     uint64_t GetFieldWidth() const;
