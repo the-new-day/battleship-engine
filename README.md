@@ -86,6 +86,6 @@ The remaining lines: the size of the ship, the type of placement (h - horizontal
 ## Notes
 During the writing of this project, I was not familiar with many features of modern C++, such as smart pointers. So in some places, it could have been written better. But not now.
 
-This is an assignment in the 1st semester of the "Basics of programming" course (ITMO SE).
+This is an assignment in the 1st semester of the "Basics of programming" course (ITMO IS).
 
 In our course, a Battleship tournament was held among all students. I took [13th place out of 57](https://docs.google.com/spreadsheets/d/1cczS6qZeuPLAA_t2Tx2bU086r6r0xfqchPo1ZK2ZJc4/edit?gid=2095339941#gid=2095339941).
