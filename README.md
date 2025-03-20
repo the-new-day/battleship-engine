@@ -1,73 +1,72 @@
 # Battleship engine
 
-Бэкенд для бота, способного играть в Морской бой: для создания полноценной игры достаточно реализовать клиентскую часть и обеспечить взаимодействие с бэкендом. Вся игровая логика реализована.
+Backend for a bot capable of playing Battleship: to create a full-fledged game, it is sufficient to implement the client-side and ensure interaction with the backend.
 
-## Сборка
-Для сборки необходим CMake и компилятор с поддержкой C++23. Собрать можно командой:
+## Building
+To build, you need a compiler with C++23 support. If you are using CMake, you can build it with the following command:
 ```bash
 cmake -B ./build & cmake --build ./build
 ```
 
-## Основная логика
-Перед началом игры нужно её создать. Для этого нужно выбрать режим игры у бота. Существует 2 режима игры: *master* и *slave*. В первом случае бот выбирает размеры поля и количества кораблей (но выбирает всегда стандартные: 10x10, система 1x4 + 2x3 + 3x2 + 4x1). В случае, если выбран *slave*, вы обязаны задать размеры поля и количество кораблей (не может быть 0).
+## Main logic
+Before starting the game, you need to create it. To do this, you need to select a game mode with the bot. There are 2 game modes: *master* and *slave*. In the first case, the bot chooses the field size and the number of ships (but always chooses the standard ones: 10x10, system 1x4 + 2x3 + 3x2 + 4x1). If *slave* is selected, you can (and have to) specify the field size and the number of ships of (cannot be 0).
 
-### Игровой процесс
-После настройки игры (поле, корабли) можно начать игру. Если вы хотите начать новую игру с теми же настройками, вы можете остановить игру и снова начать.
+### Gameplay
+After setting up the game (field, ships), you can start the game. If you want to start a new game with the same settings, you can stop the game and start it again.
 
-Процесс игры максимально прост: вы просите бота назвать координаты следующего его выстрела, а затем сообщаете результат. Если хотите выстрелить сами, также сообщаете координаты выстрела, а бот возвращает результат (попал/ранен/убит).
+The gameplay is very simple: you ask the bot to name the coordinates of its next shot, and then you report the result. If you want to shoot yourself, you also provide the shot coordinates, and the bot returns the result (miss/hit/kill).
 
-Программа не следит за соблюдением правил игры (в частности, очерёдность выстрелов), эта функция отводится игроку.
+The program does not monitor compliance with the game rules (in particular, the order of shots), this function is left to the player or the client.
 
-### Стратегии
-Вы можете выбрать стратегию, в которой будет играть бот. Всего их существует 3: *ordered*, *parity* и *probability*. Также можно выбрать стратегию *custom*, что позволит боту решать самому (на самом деле, стратегия тогда будет зависеть от размеров поля).
+### Strategies
+You can choose the strategy in which the bot will play. There are 3 strategies in total: *ordered*, *parity*, and *probability*. You can also choose the *custom* strategy, which allows the bot to decide for itself (in fact, the strategy will then depend on the field size).
 
 #### Ordered
-Это самая простая стратегия. Бот будет просто стрелять по всем клеткам подряд, начиная с левой верхней и заканчивая правой нижней.
+This is the simplest strategy. The bot will simply shoot at all cells in order, starting from the top left and ending with the bottom right.
 
-*Охотящаяся стратегия* - стратегия, в которой, если получилось попасть по противнику, бот будет стараться выбить весь корабль. Также в охотящайся стратегии запоминаются гарантированно пустые клетки для избежания выстрелов по ним.
+*Hunting strategy* - a strategy in which, if the bot manages to hit the opponent, it will try to sink the entire ship. Also, in the hunting strategy, guaranteed empty cells are remembered to avoid shooting at them.
 
-Следующие две являются такими.
+The next two are such.
 
 #### Parity
-Это охотящаяся стратегия, которая в базовом режиме (не в "охоте") отличается от ordered только тем, что стреляет по клеткам с шагом 2. Таким образом увеличивается шанс быстрого подбития крупных кораблей.
+This is a hunting strategy that in the basic mode (not in "hunt") differs from ordered only in that it shoots at cells with a step of 2. This increases the chance of quickly hitting large ships.
 
 #### Probability
-Стратегия, основанная на ожидании появления корабля в конктерной клетке. После каждого выстрела ожидания пересчитываются, и выбирается самая вероятная клетка. Это самая "умная" стратегия.
+A strategy based on the expectation of a ship appearing in a specific cell. After each shot, the expectations are recalculated, and the most probable cell is selected. This is the "smartest" strategy.
 
-## Взаимодействие
-В базовом варианте взаимодействие осуществляется через стандартный ввод-вывод. Однако игровая логика не зависит от конкретной реализации клиента, поэтому возможно добавить любой другой тип взаимодействия.
+## Interaction
+In the basic version, interaction is carried out through standard input-output. However, the game logic does not depend on the specific client implementation, so it is possible to add any other type of interaction.
 
-Через консоль взаимодействие осуществляется с помощью команд:
-| Команда                      | Ответ          | Описание |
+Through the stdin/stdout, interaction is carried out using the following commands:
+| Command                      | Response       | Description |
 | -------                      | -----          | --------                                    |
-| exit                         |  ok            |   программа завершается                     |
-| create [master, slave]       |  ok            |   создать игру в режиме master или slave соответственно       |
-| start                        |  ok            |   старт игры                     |
-| stop                         |  ok            |   остановка текущей партии       |
-| set width  N                 |  ok/failed     |   установить ширину поля (N положительное, влезает в uint64_t)       |
-| get width                    |  N             |   получить длину поля  (N положительное, влезает в uint64_t)      |
-| set height N                 |  ok/failed     |   установить высоту поля (N положительное, влезает в uint64_t)        |
-| get height                   |  N             |   получить высоту поля  (N положительное, влезает в uint64_t)      |
-| set count [1, 2, 3, 4]  N    |  ok/failed     |   установить количество кораблей определенного типа (N положительное, влезает в uint64_t)        |
-| get count [1, 2, 3, 4]       |  N             |   получить количество кораблей определенного типа (N положительное, влезает в uint64_t)        |
-| set strategy [ordered, custom, parity, probability]|  ok            |   выбрать стратегию для игры        |
-| shot X Y                     |  miss/hit/kill |   выстрел по кораблям бота в координатах (X, Y) (X, Y положительные, влезают в uint64_t)      | 
-| shot                         |  X Y           |   вернуть координаты следующего выстрела бота, в ответе два числа через пробел  (X,Y положительные, влезают в uint64_t)       |
-| set result [miss, hit, kill]                     |  ok        |   установить результат последнего выстрела бота       |
-| finished                     |  yes/no        |   окончена ли текущая партия       |
-| win                          |  yes/no        |   победил ли бот       |
-| lose                         |  yes/no        |   проиграл ли бот       |
-| dump PATH                    |  ok            |   сохранить размер поля и текущую расстановку кораблей бота в файл        |
-| load PATH                    |  ok            |   загрузить размер поля и расстановку кораблей из файла      |
-| ping                         |  pong          |   тестовая команда                          |
+| exit                         |  ok            |   Program terminates                    |
+| create [master, slave]       |  ok            |   Create a game in master or slave mode respectively       |
+| start                        |  ok            |   Start the game                    |
+| stop                         |  ok            |   Stop the current game       |
+| set width  N                 |  ok/failed     |   Set the field width (N positive, fits in uint64_t)       |
+| get width                    |  N             |   Get the field width      |
+| set height N                 |  ok/failed     |   Set the field height (N positive, fits in uint64_t)        |
+| get height                   |  N             |   Get the field height      |
+| set count [1, 2, 3, 4]  N    |  ok/failed     |   Set the number of ships of a certain type (N positive, fits in uint64_t)       |
+| get count [1, 2, 3, 4]       |  N             |   Get the number of ships of a certain type   |
+| set strategy [ordered, custom, parity, probability]|  ok            |   Choose a strategy for the game        |
+| shot X Y                     |  miss/hit/kill |   Shoot at the bot's ships at coordinates (X, Y) (X, Y positive, fit in uint64_t)  | 
+| shot                         |  X Y           |   Return the coordinates of the bot's next shot, in response two numbers separated by a space (X,Y positive, fit in uint64_t)     |
+| set result [miss, hit, kill] |  ok            |   Set the result of the bot's last shot       |
+| finished                     |  yes/no        |   Is the current game finished       |
+| win                          |  yes/no        |   Did the bot win       |
+| lose                         |  yes/no        |   Did the bot lose       |
+| dump PATH                    |  ok            |   Save the field size and the current arrangement of the bot's ships to a file        |
+| load PATH                    |  ok            |   Load the field size and the arrangement of ships from a file      |
+| ping                         |  pong          |   Test command                          |
 
+## Saving the Field
+You can load your own field for the bot or save the current arrangement of ships to a file to resume the game. Use the appropriate commands for this.
 
-## Сохранение поля
-Вы можете загрузить для бота собственное поле либо сохранить текущую расстановку кораблей в файл для возобновления игры. Для этого воспользуйтесь соответствующими командами.
+Loading the field automatically sets the configuration and sets the bot's role to master, so without stopping the game, it cannot be changed.
 
-Загрузка поля автоматически задаёт конфигурацию и устанавливает роль бота в master, поэтому без остановки игры изменить её нельзя.
-
-Формат файла:
+File format:
 ```
 10 10
 1 h 3 0
@@ -81,14 +80,12 @@ cmake -B ./build & cmake --build ./build
 3 v 3 5
 3 v 7 3
 ```
-В первой строке: длина и ширина поля.
-Остальные строки: размер корабля, тип расположения (h - горизонтально, v - вертикально), x и y координаты самой левой верхней точки корабля (от левого верхнего угла).
+The first line: the length and width of the field.
+The remaining lines: the size of the ship, the type of placement (h - horizontal, v - vertical), x and y coordinates of the top-left point of the ship (from the top-left corner).
 
-P. S. Конечно, смысл игры теряется, если вы знаете поле противника (бота). Но если не смотреть...
+## Notes
+During the writing of this project, I was not familiar with many features of modern C++, such as smart pointers. So in some places, it could have been written better. But not now.
 
-## Примечания
-Во время написания этого проекта я не был знаком со многими фичами современного C++, например, с умными указателями. Так что в некоторых местах можно было бы написать лучше. Но пока не хочу.
+This is an assignment in the 1st semester of the "Basics of programming" course (ITMO SE).
 
-На нашем курсе проводился турнир по Морскому бою среди всех студентов. Я занял [13 место из 57](https://docs.google.com/spreadsheets/d/1cczS6qZeuPLAA_t2Tx2bU086r6r0xfqchPo1ZK2ZJc4/edit?gid=2095339941#gid=2095339941).
-
-* [Оригинальное задание](original_task.md)
+In our course, a Battleship tournament was held among all students. I took [13th place out of 57](https://docs.google.com/spreadsheets/d/1cczS6qZeuPLAA_t2Tx2bU086r6r0xfqchPo1ZK2ZJc4/edit?gid=2095339941#gid=2095339941).
